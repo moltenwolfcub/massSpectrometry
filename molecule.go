@@ -11,20 +11,20 @@ var (
 	CARBON = Atom{
 		Name:         "carbon",
 		AtomicNumber: 6,
-		AtomicMass:   12.0,
+		AtomicMass:   12,
 	}
 
 	HYDROGEN = Atom{
 		Name:         "hydrogen",
 		AtomicNumber: 1,
-		AtomicMass:   1.0,
+		AtomicMass:   1,
 	}
 )
 
 type Atom struct {
 	Name         string
 	AtomicNumber int
-	AtomicMass   float32 //should probably be int for a given atom
+	AtomicMass   int
 }
 
 type Molecule struct {
@@ -45,5 +45,5 @@ type RenderMolecule struct {
 
 func (m RenderMolecule) Draw(screen *ebiten.Image) {
 	var size float32 = 10
-	vector.FillCircle(screen, m.Molecule.Pos.X, m.Molecule.Pos.Y, size, m.Color, false)
+	vector.FillCircle(screen, float32(m.Molecule.Pos.X), float32(m.Molecule.Pos.Y), size, m.Color, false)
 }

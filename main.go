@@ -50,7 +50,7 @@ func (g Game) Draw(screen *ebiten.Image) {
 	accelRegion := ebiten.NewImage(int(g.accelerationRegion.Width()), int(g.accelerationRegion.Height()))
 	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
 	drawOps := ebiten.DrawImageOptions{}
-	drawOps.GeoM.Translate(float64(g.accelerationRegion.Min.X), float64(g.accelerationRegion.Min.Y))
+	drawOps.GeoM.Translate(g.accelerationRegion.Min.X, g.accelerationRegion.Min.Y)
 	screen.DrawImage(accelRegion, &drawOps)
 
 	g.drawableMethane.Draw(screen)

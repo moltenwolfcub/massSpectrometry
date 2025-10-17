@@ -2,24 +2,18 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-func Abs32(a float32) float32 {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-
 type Vec2 struct {
-	X, Y float32
+	X, Y float64
 }
 
 func (v Vec2) String() string {
 	return fmt.Sprintf("(%v,%v)", v.X, v.Y)
 }
 
-func (v Vec2) Elem() (float32, float32) {
+func (v Vec2) Elem() (float64, float64) {
 	return v.X, v.Y
 }
 
@@ -28,7 +22,7 @@ type Rect struct {
 	Max Vec2
 }
 
-func NewRect(minX, minY, maxX, maxY float32) Rect {
+func NewRect(minX, minY, maxX, maxY float64) Rect {
 	return Rect{
 		Min: Vec2{
 			X: minX,
@@ -41,9 +35,9 @@ func NewRect(minX, minY, maxX, maxY float32) Rect {
 	}
 }
 
-func (r Rect) Width() float32 {
-	return Abs32(r.Max.X - r.Min.X)
+func (r Rect) Width() float64 {
+	return math.Abs(r.Max.X - r.Min.X)
 }
-func (r Rect) Height() float32 {
-	return Abs32(r.Max.Y - r.Min.Y)
+func (r Rect) Height() float64 {
+	return math.Abs(r.Max.Y - r.Min.Y)
 }
