@@ -27,4 +27,6 @@ type Molecule struct {
 		count   int
 	}
 	Charge int
+	Pos    Vec2
+	Vel    Vec2
 }
