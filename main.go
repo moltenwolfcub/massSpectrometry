@@ -7,12 +7,16 @@ import (
 )
 
 type Game struct {
+	accelerationRegion Rect
+
 	methane         Molecule
 	drawableMethane RenderMolecule
 }
 
 func NewGame() *Game {
 	g := &Game{
+		accelerationRegion: NewRect(200, 150, 500, 750),
+
 		methane: Molecule{
 			Name: "methane",
 			Atoms: []struct {
@@ -42,6 +46,12 @@ func (g Game) Update() error {
 
 func (g Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
+
+	accelRegion := ebiten.NewImage(int(g.accelerationRegion.Width()), int(g.accelerationRegion.Height()))
+	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
+	drawOps := ebiten.DrawImageOptions{}
+	drawOps.GeoM.Translate(float64(g.accelerationRegion.Min.X), float64(g.accelerationRegion.Min.Y))
+	screen.DrawImage(accelRegion, &drawOps)
 
 	g.drawableMethane.Draw(screen)
 }
