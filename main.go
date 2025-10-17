@@ -6,15 +6,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Game struct {
+type Simulation struct {
 	accelerationRegion Rect
 
 	methane         Molecule
 	drawableMethane RenderMolecule
 }
 
-func NewGame() *Game {
-	g := &Game{
+func NewSimulation() *Simulation {
+	s := &Simulation{
 		accelerationRegion: NewRect(200, 150, 500, 750),
 
 		methane: Molecule{
@@ -32,31 +32,31 @@ func NewGame() *Game {
 		},
 	}
 
-	g.drawableMethane = RenderMolecule{
-		&g.methane,
+	s.drawableMethane = RenderMolecule{
+		&s.methane,
 		color.RGBA{200, 210, 210, 255},
 	}
 
-	return g
+	return s
 }
 
-func (g Game) Update() error {
+func (s Simulation) Update() error {
 	return nil
 }
 
-func (g Game) Draw(screen *ebiten.Image) {
+func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
 
-	accelRegion := ebiten.NewImage(int(g.accelerationRegion.Width()), int(g.accelerationRegion.Height()))
+	accelRegion := ebiten.NewImage(int(s.accelerationRegion.Width()), int(s.accelerationRegion.Height()))
 	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
 	drawOps := ebiten.DrawImageOptions{}
-	drawOps.GeoM.Translate(g.accelerationRegion.Min.X, g.accelerationRegion.Min.Y)
+	drawOps.GeoM.Translate(s.accelerationRegion.Min.X, s.accelerationRegion.Min.Y)
 	screen.DrawImage(accelRegion, &drawOps)
 
-	g.drawableMethane.Draw(screen)
+	s.drawableMethane.Draw(screen)
 }
 
-func (g Game) Layout(actualWidth, actualHeight int) (screenWidth, screenHeight int) {
+func (s Simulation) Layout(actualWidth, actualHeight int) (screenWidth, screenHeight int) {
 	return 1600, 900
 }
 
@@ -65,8 +65,8 @@ func main() {
 	ebiten.SetWindowTitle("Mass Spectrometry")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	game := NewGame()
-	if err := ebiten.RunGame(game); err != nil {
+	sim := NewSimulation()
+	if err := ebiten.RunGame(sim); err != nil {
 		panic(err)
 	}
 }
