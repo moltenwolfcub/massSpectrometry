@@ -58,8 +58,8 @@ func (m *Molecule) Update(electricField ElectricField) {
 	a := F.Mul(1 / m.Mass()) //Newton's 2nd law
 
 	u := m.Vel
-	v := u.Add(a.Mul(float64(DT)))                                 //SUVAT 2
-	ds := u.Mul(float64(DT)).Add(a.Mul(float64(DT * DT)).Mul(0.5)) //SUVAT 3
+	v := u.Add(a.Mul(DT))                        //SUVAT 2
+	ds := u.Mul(DT).Add(a.Mul(DT * DT).Mul(0.5)) //SUVAT 3
 
 	m.Pos = m.Pos.Add(ds)
 	m.Vel = v

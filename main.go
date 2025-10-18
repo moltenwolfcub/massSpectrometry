@@ -31,7 +31,7 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 type Detector struct {
 	Rect              Rect
 	AcellerationField ElectricField
-	ticksElapsed      Tick
+	ticksElapsed      int
 }
 
 func (d *Detector) Update(molecules []*Molecule) {
@@ -48,13 +48,13 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 	molecule.Active = false
 	z := molecule.Charge //simulate reading the charge
 	molecule.Charge = 0
-	t := d.ticksElapsed.ToSecond()
+	t := float64(d.ticksElapsed) * DT
 
 	E := float64(z) * d.AcellerationField.PotentialDifference // Electrical energy
-	v := L / float64(t)                                       // Constant velocity
+	v := L / t                                                // Constant velocity
 	m := 2 * E / (v * v)                                      // Kinetic energy
 
-	mpz := float64(m) / float64(z)
+	mpz := m / float64(z)
 
 	fmt.Println(molecule.Mass(), mpz)
 }
