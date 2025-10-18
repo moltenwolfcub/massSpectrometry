@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -28,7 +29,34 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 }
 
 type Detector struct {
-	Rect Rect
+	Rect              Rect
+	AcellerationField ElectricField
+	ticksElapsed      int
+}
+
+func (d *Detector) Update(molecules []*Molecule) {
+	d.ticksElapsed++
+
+	for _, m := range molecules {
+		if d.Rect.Contains(m.Pos) {
+			d.TakeReading(m)
+		}
+	}
+}
+
+func (d *Detector) TakeReading(molecule *Molecule) {
+	molecule.Active = false
+	z := molecule.Charge //simulate reading the charge
+	molecule.Charge = 0
+	t := float64(d.ticksElapsed) * DT // in seconds
+
+	E := float64(z) * d.AcellerationField.PotentialDifference // Electrical energy
+	v := L / t                                                // Constant velocity
+	m := 2 * E / (v * v)                                      // Kinetic energy
+
+	mpz := m / float64(z)
+
+	fmt.Println(molecule.Mass(), mpz)
 }
 
 func (d Detector) Draw(screen *ebiten.Image) {
@@ -47,6 +75,8 @@ type Simulation struct {
 
 	methane         Molecule
 	drawableMethane RenderMolecule
+
+	wasIn bool //TEMP just to properly do detector timing for now
 }
 
 func NewSimulation() *Simulation {
@@ -56,11 +86,13 @@ func NewSimulation() *Simulation {
 			PotentialDifference: 16_000,
 		},
 		detector: Detector{
-			Rect: NewRect(1400, 150, 1500, 750),
+			Rect:         NewRect(1400, 150, 1500, 750),
+			ticksElapsed: 0,
 		},
 
 		methane: Molecule{
-			Name: "methane",
+			Name:   "methane",
+			Active: true,
 			Atoms: []struct {
 				element *Atom
 				count   int
@@ -69,22 +101,37 @@ func NewSimulation() *Simulation {
 				{&HYDROGEN, 4},
 			},
 			Charge: 1,
-			Pos:    Vec2{120, 450},
+			Pos:    Vec2{100, 450},
 			Vel:    Vec2{0, 0},
 		},
+
+		wasIn: true,
 	}
 
 	s.drawableMethane = RenderMolecule{
 		&s.methane,
 		color.RGBA{200, 210, 210, 255},
 	}
+	s.detector.AcellerationField = s.accelerationRegion
 
 	return s
 }
 
 func (s *Simulation) Update() error {
 
-	s.methane.Update(s.accelerationRegion)
+	molecules := []*Molecule{}
+
+	if s.methane.Active {
+		s.methane.Update(s.accelerationRegion)
+		molecules = append(molecules, &s.methane)
+	}
+
+	if !s.accelerationRegion.Rect.Contains(s.methane.Pos) && s.wasIn {
+		s.detector.ticksElapsed = 0
+		s.wasIn = false
+	}
+
+	s.detector.Update(molecules)
 
 	return nil
 }

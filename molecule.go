@@ -28,8 +28,9 @@ type Atom struct {
 }
 
 type Molecule struct {
-	Name  string
-	Atoms []struct {
+	Name   string
+	Active bool
+	Atoms  []struct {
 		element *Atom
 		count   int
 	}
