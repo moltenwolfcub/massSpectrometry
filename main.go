@@ -27,8 +27,23 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 	screen.DrawImage(accelRegion, &drawOps)
 }
 
+type Detector struct {
+	Rect Rect
+}
+
+func (d Detector) Draw(screen *ebiten.Image) {
+	img := ebiten.NewImage(int(d.Rect.Width()), int(d.Rect.Height()))
+	img.Fill(color.RGBA{60, 75, 75, 255})
+
+	drawOps := ebiten.DrawImageOptions{}
+	drawOps.GeoM.Translate(d.Rect.Min.X, d.Rect.Min.Y)
+
+	screen.DrawImage(img, &drawOps)
+}
+
 type Simulation struct {
 	accelerationRegion ElectricField
+	detector           Detector
 
 	methane         Molecule
 	drawableMethane RenderMolecule
@@ -39,6 +54,9 @@ func NewSimulation() *Simulation {
 		accelerationRegion: ElectricField{
 			Rect:                NewRect(100, 150, 300, 750),
 			PotentialDifference: 16_000,
+		},
+		detector: Detector{
+			Rect: NewRect(1400, 150, 1500, 750),
 		},
 
 		methane: Molecule{
@@ -75,6 +93,7 @@ func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
 
 	s.accelerationRegion.Draw(screen)
+	s.detector.Draw(screen)
 
 	s.drawableMethane.Draw(screen)
 }
