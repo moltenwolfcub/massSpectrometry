@@ -11,6 +11,12 @@ type ElectricField struct {
 	PotentialDifference float64
 }
 
+func (e ElectricField) FieldStrength() Vec2 {
+	E := e.PotentialDifference / e.Rect.Width() //Uniform Electric Field Strength
+	return Vec2{E, 0}
+	//points from + to - and I've set that to the useful way of my sim
+}
+
 func (e ElectricField) Draw(screen *ebiten.Image) {
 	accelRegion := ebiten.NewImage(int(e.Rect.Width()), int(e.Rect.Height()))
 	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
@@ -44,7 +50,7 @@ func NewSimulation() *Simulation {
 				{&CARBON, 1},
 				{&HYDROGEN, 4},
 			},
-			Charge: 0,
+			Charge: 1,
 			Pos:    Vec2{250, 450},
 			Vel:    Vec2{0, 0},
 		},

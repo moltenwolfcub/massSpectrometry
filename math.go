@@ -44,7 +44,7 @@ func NewRect(minX, minY, maxX, maxY float64) Rect {
 			X: maxX,
 			Y: maxY,
 		},
-	}
+	}.Canon()
 }
 
 func (r Rect) Width() float64 {
@@ -52,4 +52,21 @@ func (r Rect) Width() float64 {
 }
 func (r Rect) Height() float64 {
 	return math.Abs(r.Max.Y - r.Min.Y)
+}
+
+// Copied straight from image.Point.In()
+func (r Rect) Contains(v Vec2) bool {
+	return r.Min.X <= v.X && v.X < r.Max.X && r.Min.Y <= v.Y && v.Y < r.Max.Y
+}
+
+// Makes sure the minimum and maximum points are as such.
+// Copied straight from image.Rectangle.Canon()
+func (r Rect) Canon() Rect {
+	if r.Max.X < r.Min.X {
+		r.Min.X, r.Max.X = r.Max.X, r.Min.X
+	}
+	if r.Max.Y < r.Min.Y {
+		r.Min.Y, r.Max.Y = r.Max.Y, r.Min.Y
+	}
+	return r
 }

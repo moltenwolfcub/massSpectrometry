@@ -38,8 +38,24 @@ type Molecule struct {
 	Vel    Vec2
 }
 
+func (m Molecule) Mass() float64 {
+	mass := 0.0
+	for _, a := range m.Atoms {
+		elementMass := a.element.AtomicMass
+		mass += float64(elementMass * a.count)
+	}
+	return mass
+}
+
 func (m *Molecule) Update(electricField ElectricField) {
-	a := Vec2{50, 0}
+	var F Vec2
+
+	if electricField.Rect.Contains(m.Pos) {
+		F = electricField.FieldStrength().Mul(float64(m.Charge)) //Lorentz Force
+	}
+
+	a := F.Mul(1 / m.Mass()) //Newton's 2nd law
+
 	u := m.Vel
 	v := u.Add(a.Mul(DT))                        //SUVAT 2
 	ds := u.Mul(DT).Add(a.Mul(DT * DT).Mul(0.5)) //SUVAT 3
