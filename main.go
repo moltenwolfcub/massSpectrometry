@@ -70,6 +70,8 @@ type Simulation struct {
 	accelerationRegion ElectricField
 	detector           Detector
 
+	ionisationButton Button
+
 	methane         Molecule
 	drawableMethane RenderMolecule
 }
@@ -90,6 +92,12 @@ func NewSimulation() *Simulation {
 			),
 		},
 
+		ionisationButton: Button{
+			Text:  "Ionise",
+			Rect:  NewRect(100, 800, 300, 850),
+			Color: color.RGBA{0, 70, 25, 255},
+		},
+
 		methane: Molecule{
 			Name:   "methane",
 			Active: true,
@@ -100,12 +108,14 @@ func NewSimulation() *Simulation {
 				{&CARBON, 1},
 				{&HYDROGEN, 4},
 			},
-			Charge:     1,
+			Charge:     0,
 			Pos:        Vec2{float64(100 / PXPM), float64(450 / PXPM)},
 			Vel:        Vec2{0, 0},
 			DriftTicks: 0,
 		},
 	}
+
+	s.ionisationButton.Fuction = s.IoniseMolecules
 
 	s.drawableMethane = RenderMolecule{
 		&s.methane,
@@ -116,7 +126,16 @@ func NewSimulation() *Simulation {
 	return s
 }
 
+func (s *Simulation) IoniseMolecules() {
+	for _, m := range []*Molecule{&s.methane} {
+		if s.accelerationRegion.Rect.Contains(m.Pos) {
+			m.Charge = 1
+		}
+	}
+}
+
 func (s *Simulation) Update() error {
+	s.ionisationButton.Update()
 
 	molecules := []*Molecule{}
 
@@ -132,6 +151,8 @@ func (s *Simulation) Update() error {
 
 func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
+
+	s.ionisationButton.Draw(screen)
 
 	s.accelerationRegion.Draw(screen)
 	s.detector.Draw(screen)
