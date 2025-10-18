@@ -31,12 +31,9 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 type Detector struct {
 	Rect              Rect
 	AcellerationField ElectricField
-	ticksElapsed      int
 }
 
 func (d *Detector) Update(molecules []*Molecule) {
-	d.ticksElapsed++
-
 	for _, m := range molecules {
 		if d.Rect.Contains(m.Pos) {
 			d.TakeReading(m)
@@ -48,7 +45,7 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 	molecule.Active = false
 	z := molecule.Charge //simulate reading the charge
 	molecule.Charge = 0
-	t := float64(d.ticksElapsed) * DT
+	t := float64(molecule.DriftTicks) * DT
 
 	E := float64(z) * d.AcellerationField.PotentialDifference // Electrical energy
 	v := L / t                                                // Constant velocity
@@ -75,8 +72,6 @@ type Simulation struct {
 
 	methane         Molecule
 	drawableMethane RenderMolecule
-
-	wasIn bool //TEMP just to properly do detector timing for now
 }
 
 func NewSimulation() *Simulation {
@@ -93,7 +88,6 @@ func NewSimulation() *Simulation {
 				float64(1400/PXPM), float64(150/PXPM),
 				float64(1500/PXPM), float64(750/PXPM),
 			),
-			ticksElapsed: 0,
 		},
 
 		methane: Molecule{
@@ -106,12 +100,11 @@ func NewSimulation() *Simulation {
 				{&CARBON, 1},
 				{&HYDROGEN, 4},
 			},
-			Charge: 1,
-			Pos:    Vec2{float64(100 / PXPM), float64(450 / PXPM)},
-			Vel:    Vec2{0, 0},
+			Charge:     1,
+			Pos:        Vec2{float64(100 / PXPM), float64(450 / PXPM)},
+			Vel:        Vec2{0, 0},
+			DriftTicks: 0,
 		},
-
-		wasIn: true,
 	}
 
 	s.drawableMethane = RenderMolecule{
@@ -130,11 +123,6 @@ func (s *Simulation) Update() error {
 	if s.methane.Active {
 		s.methane.Update(s.accelerationRegion)
 		molecules = append(molecules, &s.methane)
-	}
-
-	if !s.accelerationRegion.Rect.Contains(s.methane.Pos) && s.wasIn {
-		s.detector.ticksElapsed = 0
-		s.wasIn = false
 	}
 
 	s.detector.Update(molecules)

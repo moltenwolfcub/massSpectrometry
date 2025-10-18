@@ -28,9 +28,10 @@ type Atom struct {
 }
 
 type Molecule struct {
-	Name   string
-	Active bool
-	Atoms  []struct {
+	Name       string
+	Active     bool
+	DriftTicks int
+	Atoms      []struct {
 		element *Atom
 		count   int
 	}
@@ -53,6 +54,8 @@ func (m *Molecule) Update(electricField ElectricField) {
 
 	if electricField.Rect.Contains(m.Pos) {
 		F = electricField.FieldStrength().Mul(float64(m.Charge)) //Lorentz Force
+	} else {
+		m.DriftTicks++
 	}
 
 	a := F.Mul(1 / m.Mass()) //Newton's 2nd law
