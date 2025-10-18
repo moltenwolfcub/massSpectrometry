@@ -52,14 +52,14 @@ func (m *Molecule) Update(electricField ElectricField) {
 	var F Vec2
 
 	if electricField.Rect.Contains(m.Pos) {
-		F = electricField.FieldStrength().Mul(Metre(m.Charge)) //Lorentz Force
+		F = electricField.FieldStrength().Mul(float64(m.Charge)) //Lorentz Force
 	}
 
-	a := F.Mul(Metre(1 / m.Mass())) //Newton's 2nd law
+	a := F.Mul(1 / m.Mass()) //Newton's 2nd law
 
 	u := m.Vel
-	v := u.Add(a.Mul(Metre(DT)))                               //SUVAT 2
-	ds := u.Mul(Metre(DT)).Add(a.Mul(Metre(DT * DT)).Mul(0.5)) //SUVAT 3
+	v := u.Add(a.Mul(float64(DT)))                                 //SUVAT 2
+	ds := u.Mul(float64(DT)).Add(a.Mul(float64(DT * DT)).Mul(0.5)) //SUVAT 3
 
 	m.Pos = m.Pos.Add(ds)
 	m.Vel = v
@@ -72,5 +72,5 @@ type RenderMolecule struct {
 
 func (m RenderMolecule) Draw(screen *ebiten.Image) {
 	var size float32 = 10
-	vector.FillCircle(screen, float32(m.Molecule.Pos.X.ToPixel()), float32(m.Molecule.Pos.Y.ToPixel()), size, m.Color, true)
+	vector.FillCircle(screen, float32(m.Molecule.Pos.X)*float32(PXPM), float32(m.Molecule.Pos.Y)*float32(PXPM), size, m.Color, true)
 }

@@ -13,17 +13,17 @@ type ElectricField struct {
 }
 
 func (e ElectricField) FieldStrength() Vec2 {
-	E := Metre(e.PotentialDifference) / e.Rect.Width() //Uniform Electric Field Strength
+	E := e.PotentialDifference / e.Rect.Width() //Uniform Electric Field Strength
 	return Vec2{E, 0}
 	//points from + to - and I've set that to the useful way of my sim
 }
 
 func (e ElectricField) Draw(screen *ebiten.Image) {
-	accelRegion := ebiten.NewImage(int(e.Rect.Width().ToPixel()), int(e.Rect.Height().ToPixel()))
+	accelRegion := ebiten.NewImage(int(e.Rect.Width()*float64(PXPM)), int(e.Rect.Height()*float64(PXPM)))
 	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
 
 	drawOps := ebiten.DrawImageOptions{}
-	drawOps.GeoM.Translate(float64(e.Rect.Min.X.ToPixel()), float64(e.Rect.Min.Y.ToPixel()))
+	drawOps.GeoM.Translate(float64(e.Rect.Min.X*float64(PXPM)), float64(e.Rect.Min.Y*float64(PXPM)))
 
 	screen.DrawImage(accelRegion, &drawOps)
 }
@@ -51,8 +51,8 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 	t := d.ticksElapsed.ToSecond()
 
 	E := float64(z) * d.AcellerationField.PotentialDifference // Electrical energy
-	v := L / Metre(t)                                         // Constant velocity
-	m := 2 * Metre(E) / (v * v)                               // Kinetic energy
+	v := L / float64(t)                                       // Constant velocity
+	m := 2 * E / (v * v)                                      // Kinetic energy
 
 	mpz := float64(m) / float64(z)
 
@@ -60,11 +60,11 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 }
 
 func (d Detector) Draw(screen *ebiten.Image) {
-	img := ebiten.NewImage(int(d.Rect.Width().ToPixel()), int(d.Rect.Height().ToPixel()))
+	img := ebiten.NewImage(int(d.Rect.Width()*float64(PXPM)), int(d.Rect.Height()*float64(PXPM)))
 	img.Fill(color.RGBA{60, 75, 75, 255})
 
 	drawOps := ebiten.DrawImageOptions{}
-	drawOps.GeoM.Translate(float64(d.Rect.Min.X.ToPixel()), float64(d.Rect.Min.Y.ToPixel()))
+	drawOps.GeoM.Translate(float64(d.Rect.Min.X*float64(PXPM)), float64(d.Rect.Min.Y*float64(PXPM)))
 
 	screen.DrawImage(img, &drawOps)
 }
@@ -83,15 +83,15 @@ func NewSimulation() *Simulation {
 	s := &Simulation{
 		accelerationRegion: ElectricField{
 			Rect: NewRect(
-				Pixel(100).ToMetre(), Pixel(150).ToMetre(),
-				Pixel(300).ToMetre(), Pixel(750).ToMetre(),
+				float64(100/PXPM), float64(150/PXPM),
+				float64(300/PXPM), float64(750/PXPM),
 			),
 			PotentialDifference: 16_000,
 		},
 		detector: Detector{
 			Rect: NewRect(
-				Pixel(1400).ToMetre(), Pixel(150).ToMetre(),
-				Pixel(1500).ToMetre(), Pixel(750).ToMetre(),
+				float64(1400/PXPM), float64(150/PXPM),
+				float64(1500/PXPM), float64(750/PXPM),
 			),
 			ticksElapsed: 0,
 		},
@@ -107,7 +107,7 @@ func NewSimulation() *Simulation {
 				{&HYDROGEN, 4},
 			},
 			Charge: 1,
-			Pos:    Vec2{Pixel(100).ToMetre(), Pixel(450).ToMetre()},
+			Pos:    Vec2{float64(100 / PXPM), float64(450 / PXPM)},
 			Vel:    Vec2{0, 0},
 		},
 
