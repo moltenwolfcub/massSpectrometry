@@ -37,7 +37,7 @@ type Simulation struct {
 func NewSimulation() *Simulation {
 	s := &Simulation{
 		accelerationRegion: ElectricField{
-			Rect:                NewRect(200, 150, 500, 750),
+			Rect:                NewRect(100, 150, 300, 750),
 			PotentialDifference: 16_000,
 		},
 
@@ -51,7 +51,7 @@ func NewSimulation() *Simulation {
 				{&HYDROGEN, 4},
 			},
 			Charge: 1,
-			Pos:    Vec2{250, 450},
+			Pos:    Vec2{120, 450},
 			Vel:    Vec2{0, 0},
 		},
 	}
