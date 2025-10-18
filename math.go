@@ -17,6 +17,18 @@ func (v Vec2) Elem() (float64, float64) {
 	return v.X, v.Y
 }
 
+func (v Vec2) Add(u Vec2) Vec2 {
+	return Vec2{v.X + u.X, v.Y + u.Y}
+}
+
+func (v Vec2) Sub(u Vec2) Vec2 {
+	return Vec2{v.X - u.X, v.Y - u.Y}
+}
+
+func (v Vec2) Mul(u float64) Vec2 {
+	return Vec2{v.X * u, v.Y * u}
+}
+
 type Rect struct {
 	Min Vec2
 	Max Vec2

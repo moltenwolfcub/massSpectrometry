@@ -27,7 +27,7 @@ func NewSimulation() *Simulation {
 				{&HYDROGEN, 4},
 			},
 			Charge: 0,
-			Pos:    Vec2{800, 450},
+			Pos:    Vec2{250, 450},
 			Vel:    Vec2{0, 0},
 		},
 	}
@@ -40,7 +40,10 @@ func NewSimulation() *Simulation {
 	return s
 }
 
-func (s Simulation) Update() error {
+func (s *Simulation) Update() error {
+
+	s.methane.Update(s.accelerationRegion)
+
 	return nil
 }
 

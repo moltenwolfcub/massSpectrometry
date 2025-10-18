@@ -38,6 +38,16 @@ type Molecule struct {
 	Vel    Vec2
 }
 
+func (m *Molecule) Update(electricField Rect) {
+	a := Vec2{50, 0}
+	u := m.Vel
+	v := u.Add(a.Mul(DT))                        //SUVAT 2
+	ds := u.Mul(DT).Add(a.Mul(DT * DT).Mul(0.5)) //SUVAT 3
+
+	m.Pos = m.Pos.Add(ds)
+	m.Vel = v
+}
+
 type RenderMolecule struct {
 	Molecule *Molecule
 	Color    color.Color
@@ -45,5 +55,5 @@ type RenderMolecule struct {
 
 func (m RenderMolecule) Draw(screen *ebiten.Image) {
 	var size float32 = 10
-	vector.FillCircle(screen, float32(m.Molecule.Pos.X), float32(m.Molecule.Pos.Y), size, m.Color, false)
+	vector.FillCircle(screen, float32(m.Molecule.Pos.X), float32(m.Molecule.Pos.Y), size, m.Color, true)
 }
