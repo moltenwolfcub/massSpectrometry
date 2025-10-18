@@ -6,8 +6,23 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type ElectricField struct {
+	Rect                Rect
+	PotentialDifference float64
+}
+
+func (e ElectricField) Draw(screen *ebiten.Image) {
+	accelRegion := ebiten.NewImage(int(e.Rect.Width()), int(e.Rect.Height()))
+	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
+
+	drawOps := ebiten.DrawImageOptions{}
+	drawOps.GeoM.Translate(e.Rect.Min.X, e.Rect.Min.Y)
+
+	screen.DrawImage(accelRegion, &drawOps)
+}
+
 type Simulation struct {
-	accelerationRegion Rect
+	accelerationRegion ElectricField
 
 	methane         Molecule
 	drawableMethane RenderMolecule
@@ -15,7 +30,10 @@ type Simulation struct {
 
 func NewSimulation() *Simulation {
 	s := &Simulation{
-		accelerationRegion: NewRect(200, 150, 500, 750),
+		accelerationRegion: ElectricField{
+			Rect:                NewRect(200, 150, 500, 750),
+			PotentialDifference: 16_000,
+		},
 
 		methane: Molecule{
 			Name: "methane",
@@ -50,11 +68,7 @@ func (s *Simulation) Update() error {
 func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
 
-	accelRegion := ebiten.NewImage(int(s.accelerationRegion.Width()), int(s.accelerationRegion.Height()))
-	accelRegion.Fill(color.RGBA{250, 50, 50, 100})
-	drawOps := ebiten.DrawImageOptions{}
-	drawOps.GeoM.Translate(s.accelerationRegion.Min.X, s.accelerationRegion.Min.Y)
-	screen.DrawImage(accelRegion, &drawOps)
+	s.accelerationRegion.Draw(screen)
 
 	s.drawableMethane.Draw(screen)
 }

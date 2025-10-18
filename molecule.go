@@ -38,7 +38,7 @@ type Molecule struct {
 	Vel    Vec2
 }
 
-func (m *Molecule) Update(electricField Rect) {
+func (m *Molecule) Update(electricField ElectricField) {
 	a := Vec2{50, 0}
 	u := m.Vel
 	v := u.Add(a.Mul(DT))                        //SUVAT 2
