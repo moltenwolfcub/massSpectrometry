@@ -34,8 +34,8 @@ type Molecule struct {
 		count   int
 	}
 	Charge int
-	Pos    Vec2
-	Vel    Vec2
+	Pos    Vec2 // in pixels
+	Vel    Vec2 // in metres
 }
 
 func (m Molecule) Mass() float64 {
@@ -60,7 +60,7 @@ func (m *Molecule) Update(electricField ElectricField) {
 	v := u.Add(a.Mul(DT))                        //SUVAT 2
 	ds := u.Mul(DT).Add(a.Mul(DT * DT).Mul(0.5)) //SUVAT 3
 
-	m.Pos = m.Pos.Add(ds)
+	m.Pos = m.Pos.Add(ds.Mul(float64(PXPM)))
 	m.Vel = v
 }
 
