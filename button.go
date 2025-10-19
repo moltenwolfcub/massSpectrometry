@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"image/color"
 	"log"
 
@@ -22,27 +23,104 @@ func init() {
 	fontSource = s
 }
 
+type ButtonColor struct {
+	Primary   color.Color
+	Secondary color.Color
+	Hover     color.Color
+}
+
+func (c ButtonColor) GetPrimary() color.Color {
+	if c.Primary == nil {
+		panic("No primary color set.")
+	}
+	return c.Primary
+}
+
+func (c ButtonColor) GetHover() color.Color {
+	if c.Hover == nil {
+		return c.GetPrimary()
+	}
+	return c.Hover
+}
+
+func (c ButtonColor) GetSecondary() color.Color {
+	if c.Secondary == nil {
+		return c.GetHover()
+	}
+	return c.Secondary
+}
+
+type buttonState int
+
+const (
+	normal buttonState = iota
+	clicked
+	hover
+)
+
+func (b buttonState) getColor(c ButtonColor) color.Color {
+	switch b {
+	case normal:
+		return c.GetPrimary()
+	case clicked:
+		return c.GetSecondary()
+	case hover:
+		return c.GetHover()
+	default:
+		fmt.Println("[Warning] Unknown button state. Returning primary color.")
+		return c.GetPrimary()
+	}
+}
+
 type Button struct {
-	Text        string
-	TextColor   color.Color
-	TextSize    float64
-	Rect        Rect
-	ButtonColor color.Color
-	Fuction     func()
+	Text         string
+	TextColor    ButtonColor
+	TextSize     float64
+	Rect         Rect
+	ButtonColor  ButtonColor
+	Fuction      func()
+	state        buttonState
+	clickTime    int
+	MaxClickTime int
 }
 
 func (b *Button) Update() {
+	if b.state == clicked {
+		b.clickTime++
+	} else {
+		b.clickTime = 0
+	}
+
 	rawCursorX, rawCursorY := ebiten.CursorPosition()
 	cursor := Vec2{float64(rawCursorX), float64(rawCursorY)}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) && b.Rect.Contains(cursor) {
-		b.Fuction()
-		//TODO maybe change button color when pressed. maybe even hover color
+	if b.Rect.Contains(cursor) {
+		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+			b.state = clicked
+			b.Fuction()
+			//TODO maybe change button color when pressed. maybe even hover color
+		} else {
+			if b.state == clicked {
+				if b.clickTime > b.MaxClickTime {
+					b.state = hover
+				}
+			} else {
+				b.state = hover
+			}
+		}
+	} else {
+		if b.state == clicked {
+			if b.clickTime > b.MaxClickTime {
+				b.state = normal
+			}
+		} else {
+			b.state = normal
+		}
 	}
 }
 
 func (b Button) Draw(screen *ebiten.Image) {
 	img := ebiten.NewImage(int(b.Rect.Width()), int(b.Rect.Height()))
-	img.Fill(b.ButtonColor)
+	img.Fill(b.state.getColor(b.ButtonColor))
 
 	w, h := text.Measure(b.Text, &text.GoTextFace{
 		Source: fontSource,
@@ -51,7 +129,7 @@ func (b Button) Draw(screen *ebiten.Image) {
 
 	op := &text.DrawOptions{}
 	op.GeoM.Translate((b.Rect.Width()-w)/2, (b.Rect.Height()-h)/2)
-	op.ColorScale.ScaleWithColor(b.TextColor)
+	op.ColorScale.ScaleWithColor(b.state.getColor(b.TextColor))
 
 	text.Draw(img, b.Text, &text.GoTextFace{
 		Source: fontSource,
