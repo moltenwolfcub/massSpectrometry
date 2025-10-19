@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 type ElectricField struct {
@@ -26,6 +27,70 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 	drawOps.GeoM.Translate(float64(e.Rect.Min.X*float64(PXPM)), float64(e.Rect.Min.Y*float64(PXPM)))
 
 	screen.DrawImage(accelRegion, &drawOps)
+
+	OVERHANG := 30.0
+	WIDTH := 20.0
+	COLOR := color.RGBA{50, 50, 50, 255}
+
+	platePlus := ebiten.NewImage(int(WIDTH), int(e.Rect.Height()*float64(PXPM)+OVERHANG))
+	platePlus.Fill(COLOR)
+
+	ops := ebiten.DrawImageOptions{}
+	ops.GeoM.Translate(float64(e.Rect.Min.X*float64(PXPM))-WIDTH, float64(e.Rect.Min.Y*float64(PXPM))-OVERHANG/2)
+
+	screen.DrawImage(platePlus, &ops)
+
+	GAP := 50.0
+
+	plateNeg := ebiten.NewImage(int(WIDTH), int(e.Rect.Height()*float64(PXPM)+OVERHANG))
+	part := ebiten.NewImage(int(WIDTH), int(e.Rect.Height()*float64(PXPM)+OVERHANG)/2-int(GAP)/2)
+	part.Fill(COLOR)
+	partOp := ebiten.DrawImageOptions{}
+	plateNeg.DrawImage(part, &partOp)
+	partOp.GeoM.Translate(0, (e.Rect.Height()*float64(PXPM)+OVERHANG)/2+GAP)
+	plateNeg.DrawImage(part, &partOp)
+
+	ops = ebiten.DrawImageOptions{}
+	ops.GeoM.Translate(float64(e.Rect.Max.X*float64(PXPM)), float64(e.Rect.Min.Y*float64(PXPM))-OVERHANG/2)
+
+	screen.DrawImage(plateNeg, &ops)
+
+	TEXT_OFFSET := 5.0
+	TEXT_SIZE := 38.0
+
+	w, _ := text.Measure("+", &text.GoTextFace{
+		Source: fontSource,
+		Size:   TEXT_SIZE,
+	}, 0)
+
+	op := &text.DrawOptions{}
+	op.GeoM.Translate(
+		float64(e.Rect.Min.X*float64(PXPM))-WIDTH+(WIDTH-w)/2,
+		float64(e.Rect.Min.Y*float64(PXPM)-OVERHANG/2+e.Rect.Height()*float64(PXPM)+OVERHANG+TEXT_OFFSET),
+	)
+	op.ColorScale.ScaleWithColor(color.White)
+
+	text.Draw(screen, "+", &text.GoTextFace{
+		Source: fontSource,
+		Size:   TEXT_SIZE,
+	}, op)
+
+	w, _ = text.Measure("—", &text.GoTextFace{
+		Source: fontSource,
+		Size:   TEXT_SIZE,
+	}, 0)
+
+	op = &text.DrawOptions{}
+	op.GeoM.Translate(
+		float64(e.Rect.Max.X*float64(PXPM))+(WIDTH-w)/2,
+		float64(e.Rect.Min.Y*float64(PXPM)-OVERHANG/2+e.Rect.Height()*float64(PXPM)+OVERHANG+TEXT_OFFSET),
+	)
+	op.ColorScale.ScaleWithColor(color.White)
+
+	text.Draw(screen, "—", &text.GoTextFace{
+		Source: fontSource,
+		Size:   TEXT_SIZE,
+	}, op)
 }
 
 type Detector struct {
