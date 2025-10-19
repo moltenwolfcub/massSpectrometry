@@ -5,7 +5,10 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var SELECTION []struct {
@@ -111,5 +114,44 @@ func (s Selector) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(option.DrawRegion.Min.Elem())
 
 		screen.DrawImage(img, &op)
+	}
+
+	rawCursorX, rawCursorY := ebiten.CursorPosition()
+	cursor := Vec2{float64(rawCursorX), float64(rawCursorY)}
+
+	FONT_SIZE := 32
+	OFFSET := Vec2{15, 3}
+	TEXT_COLOR := color.White
+	PADDING := 5
+	BG_COLOR := color.RGBA{70, 70, 70, 200}
+
+	for _, option := range s.Options {
+		if option.DrawRegion.Contains(cursor) {
+			drawText := cases.Title(language.English).String(option.molecule.Name)
+
+			w, h := text.Measure(drawText, &text.GoTextFace{
+				Source: fontSource,
+				Size:   float64(FONT_SIZE),
+			}, 0)
+
+			img := ebiten.NewImage(int(w+float64(PADDING*2)), int(h+float64(PADDING*2)))
+			img.Fill(BG_COLOR)
+
+			textOp := &text.DrawOptions{}
+			textOp.GeoM.Translate(float64(PADDING), float64(PADDING))
+			textOp.ColorScale.ScaleWithColor(TEXT_COLOR)
+
+			text.Draw(img, drawText, &text.GoTextFace{
+				Source: fontSource,
+				Size:   float64(FONT_SIZE),
+			}, textOp)
+
+			op := ebiten.DrawImageOptions{}
+			op.GeoM.Translate(cursor.Add(OFFSET).Elem())
+
+			screen.DrawImage(img, &op)
+
+			break
+		}
 	}
 }

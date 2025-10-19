@@ -218,16 +218,15 @@ func (s *Simulation) Update() error {
 func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
 
-	s.selector.Draw(screen)
-
-	s.ionisationButton.Draw(screen)
-
 	s.accelerationRegion.Draw(screen)
 	s.detector.Draw(screen)
 
 	for _, m := range s.drawableMolecules {
 		m.Draw(screen)
 	}
+
+	s.selector.Draw(screen)
+	s.ionisationButton.Draw(screen)
 }
 
 func (s Simulation) Layout(actualWidth, actualHeight int) (screenWidth, screenHeight int) {
