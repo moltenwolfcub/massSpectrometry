@@ -18,10 +18,15 @@ var (
 		AtomicNumber: 1,
 		AtomicMass:   1,
 	}
-	COPPER = Atom{
-		Name:         "copper",
+	COPPER63 = Atom{
+		Name:         "copper 63",
 		AtomicNumber: 29,
 		AtomicMass:   63,
+	}
+	COPPER65 = Atom{
+		Name:         "copper 65",
+		AtomicNumber: 29,
+		AtomicMass:   65,
 	}
 	OXYGEN = Atom{
 		Name:         "oxygen",

@@ -30,11 +30,21 @@ var SELECTION []struct {
 	},
 	{
 		m: Molecule{
-			Name: "copper",
+			Name: "copper 63",
 			Atoms: []struct {
 				element *Atom
 				count   int
-			}{{&COPPER, 1}},
+			}{{&COPPER63, 1}},
+		},
+		c: color.RGBA{114, 73, 12, 255},
+	},
+	{
+		m: Molecule{
+			Name: "copper 65",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&COPPER65, 1}},
 		},
 		c: color.RGBA{114, 73, 12, 255},
 	},
