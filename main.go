@@ -176,36 +176,13 @@ func NewSimulation() *Simulation {
 			MaxClickTime: 10,
 		},
 
-		molecules: []*Molecule{
-			&Molecule{
-				Name:   "methane",
-				Active: true,
-				Atoms: []struct {
-					element *Atom
-					count   int
-				}{
-					{&CARBON, 1},
-					{&HYDROGEN, 4},
-				},
-				Charge:     0,
-				Pos:        Vec2{float64(100 / PXPM), float64(450 / PXPM)},
-				Vel:        Vec2{0, 0},
-				DriftTicks: 0,
-			},
-		},
+		molecules:         []*Molecule{},
+		drawableMolecules: []RenderMolecule{},
 	}
 
 	s.selector = NewSelector(NewRect(0, 0, 1600, 80), s)
 
 	s.ionisationButton.Fuction = s.IoniseMolecules
-
-	s.drawableMolecules = []RenderMolecule{}
-	for _, m := range s.molecules {
-		s.drawableMolecules = append(s.drawableMolecules,
-			RenderMolecule{m, color.RGBA{250, 50, 50, 255}},
-		)
-	}
-
 	s.detector.AcellerationField = s.accelerationRegion
 
 	return s

@@ -4,6 +4,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -65,7 +66,27 @@ func NewSelector(Rect Rect, simulation *Simulation) Selector {
 }
 
 func (s Selector) Update() {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		rawCursorX, rawCursorY := ebiten.CursorPosition()
+		cursor := Vec2{float64(rawCursorX), float64(rawCursorY)}
+		for _, o := range s.Options {
+			if o.DrawRegion.Contains(cursor) {
+				newMolecule := *o.molecule
+				newMolecule.Active = true
+				newMolecule.Charge = 0
+				newMolecule.Vel = Vec2{0, 0}
+				newMolecule.Pos = Vec2{float64(100 / PXPM), float64(450 / PXPM)}
+				newMolecule.DriftTicks = 0
 
+				s.Simulation.molecules = append(s.Simulation.molecules, &newMolecule)
+				s.Simulation.drawableMolecules = append(s.Simulation.drawableMolecules, RenderMolecule{
+					Molecule: &newMolecule,
+					Color:    o.renderable.Color,
+				})
+				break
+			}
+		}
+	}
 }
 
 func (s Selector) Draw(screen *ebiten.Image) {
