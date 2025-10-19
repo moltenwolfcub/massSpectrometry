@@ -134,6 +134,8 @@ func (d Detector) Draw(screen *ebiten.Image) {
 }
 
 type Simulation struct {
+	selector Selector
+
 	accelerationRegion ElectricField
 	detector           Detector
 
@@ -141,9 +143,6 @@ type Simulation struct {
 
 	molecules         []*Molecule
 	drawableMolecules []RenderMolecule
-
-	// methane         Molecule
-	// drawableMethane RenderMolecule
 }
 
 func NewSimulation() *Simulation {
@@ -196,12 +195,14 @@ func NewSimulation() *Simulation {
 		},
 	}
 
+	s.selector = NewSelector(NewRect(0, 0, 1600, 80), s)
+
 	s.ionisationButton.Fuction = s.IoniseMolecules
 
 	s.drawableMolecules = []RenderMolecule{}
 	for _, m := range s.molecules {
 		s.drawableMolecules = append(s.drawableMolecules,
-			RenderMolecule{m, color.RGBA{200, 210, 210, 255}},
+			RenderMolecule{m, color.RGBA{250, 50, 50, 255}},
 		)
 	}
 
@@ -219,6 +220,8 @@ func (s *Simulation) IoniseMolecules() {
 }
 
 func (s *Simulation) Update() error {
+	s.selector.Update()
+
 	s.ionisationButton.Update()
 
 	activeMolecules := []*Molecule{}
@@ -237,6 +240,8 @@ func (s *Simulation) Update() error {
 
 func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
+
+	s.selector.Draw(screen)
 
 	s.ionisationButton.Draw(screen)
 

@@ -1,0 +1,94 @@
+package main
+
+import (
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+)
+
+var SELECTION []struct {
+	m Molecule
+	c color.Color
+} = []struct {
+	m Molecule
+	c color.Color
+}{
+	{
+		m: Molecule{
+			Name: "methane",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&CARBON, 1}, {&HYDROGEN, 4}},
+		},
+		c: color.RGBA{250, 50, 50, 255},
+	},
+}
+
+type Selectable struct {
+	DrawRegion Rect
+	molecule   *Molecule
+	renderable RenderMolecule
+}
+
+type Selector struct {
+	Simulation *Simulation
+
+	Rect    Rect
+	Options []Selectable
+}
+
+func NewSelector(Rect Rect, simulation *Simulation) Selector {
+	s := Selector{
+		Simulation: simulation,
+		Rect:       Rect,
+	}
+
+	tileSize := s.Rect.Height()
+
+	PADDING := 5
+
+	count := 0
+	for _, o := range SELECTION {
+		s.Options = append(s.Options, Selectable{
+			DrawRegion: NewRect((tileSize+float64(PADDING))*float64(count)+float64(PADDING), float64(PADDING), (tileSize+float64(PADDING))*float64(count)+tileSize, tileSize-float64(PADDING)),
+			molecule:   &o.m,
+			renderable: RenderMolecule{
+				Molecule: &o.m,
+				Color:    o.c,
+			},
+		})
+	}
+
+	return s
+}
+
+func (s Selector) Update() {
+
+}
+
+func (s Selector) Draw(screen *ebiten.Image) {
+	img := ebiten.NewImage(int(s.Rect.Width()), int(s.Rect.Height()))
+	img.Fill(color.RGBA{170, 170, 170, 255})
+
+	drawOps := ebiten.DrawImageOptions{}
+	drawOps.GeoM.Translate(s.Rect.Min.Elem())
+
+	screen.DrawImage(img, &drawOps)
+
+	for _, option := range s.Options {
+		img := ebiten.NewImage(int(option.DrawRegion.Width()), int(option.DrawRegion.Height()))
+		img.Fill(color.RGBA{200, 200, 200, 255})
+
+		MOLECULE_RADIUS := 10.0
+
+		moleculePos := option.DrawRegion.Min.Add(option.DrawRegion.Size().Mul(0.5)).Add(Vec2{-MOLECULE_RADIUS / 2, -MOLECULE_RADIUS / 2})
+		vector.FillCircle(img, float32(moleculePos.X), float32(moleculePos.Y), float32(MOLECULE_RADIUS), option.renderable.Color, true)
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Translate(option.DrawRegion.Min.Elem())
+
+		screen.DrawImage(img, &op)
+	}
+}

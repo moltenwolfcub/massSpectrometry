@@ -53,6 +53,9 @@ func (r Rect) Width() float64 {
 func (r Rect) Height() float64 {
 	return math.Abs(r.Max.Y - r.Min.Y)
 }
+func (r Rect) Size() Vec2 {
+	return Vec2{r.Width(), r.Height()}
+}
 
 // Copied straight from image.Point.In()
 func (r Rect) Contains(v Vec2) bool {
