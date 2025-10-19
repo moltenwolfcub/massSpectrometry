@@ -152,7 +152,7 @@ func (d DataLogger) String() string {
 	ordered := make([]LoggerEntry, len(d.data))
 	copy(ordered, d.data)
 	sort.Slice(ordered, func(i, j int) bool {
-		return d.data[i].abundance < d.data[j].abundance
+		return d.data[i].abundance > d.data[j].abundance
 	})
 
 	str := "================================\n"
