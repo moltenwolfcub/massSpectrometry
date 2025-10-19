@@ -269,6 +269,21 @@ func NewSimulation() *Simulation {
 			Fuction:      s.GetOutput,
 			MaxClickTime: 10,
 		},
+		{
+			Text: "Reset Output",
+			TextColor: ButtonColor{
+				Primary: color.White,
+			},
+			TextSize: 30,
+			Rect:     NewRect(600, 800, 850, 850),
+			ButtonColor: ButtonColor{
+				Primary:   color.RGBA{0, 70, 25, 255},
+				Hover:     color.RGBA{0, 63, 22, 255},
+				Secondary: color.RGBA{0, 94, 35, 255},
+			},
+			Fuction:      s.ResetOutput,
+			MaxClickTime: 10,
+		},
 	}
 	s.detector.AcellerationField = s.accelerationRegion
 
@@ -290,6 +305,11 @@ func (s *Simulation) CleanSimulation() {
 
 func (s *Simulation) GetOutput() {
 	fmt.Print(s.detector.DataLogger)
+}
+
+func (s *Simulation) ResetOutput() {
+	s.detector.DataLogger.data = make([]LoggerEntry, 0)
+	s.detector.DataLogger.totalEntries = 0
 }
 
 func (s Simulation) GetSpawn() Vec2 {
