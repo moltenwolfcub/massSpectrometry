@@ -78,7 +78,7 @@ func (s Selector) Update() {
 				newMolecule.Active = true
 				newMolecule.Charge = 0
 				newMolecule.Vel = Vec2{0, 0}
-				newMolecule.Pos = Vec2{float64(100 / PXPM), float64(450 / PXPM)}
+				newMolecule.Pos = s.Simulation.GetSpawn()
 				newMolecule.DriftTicks = 0
 
 				s.Simulation.molecules = append(s.Simulation.molecules, &newMolecule)

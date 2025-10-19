@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math/rand/v2"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -194,6 +195,18 @@ func (s *Simulation) IoniseMolecules() {
 			m.Charge = 1
 		}
 	}
+}
+
+func (s Simulation) GetSpawn() Vec2 {
+	x := float64(100) / float64(PXPM)
+
+	TOP := 391.0
+
+	pixY := 48 * rand.Float64()
+	y := (TOP + pixY) / float64(PXPM)
+
+	return Vec2{x, y}
+
 }
 
 func (s *Simulation) Update() error {
