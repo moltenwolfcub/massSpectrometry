@@ -1,27 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"image/color"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
-
-var (
-	fontSource *text.GoTextFaceSource
-)
-
-func init() {
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(ButtonFont))
-	if err != nil {
-		log.Fatal(err)
-	}
-	fontSource = s
-}
 
 type ButtonColor struct {
 	Primary   color.Color
@@ -97,7 +83,6 @@ func (b *Button) Update() {
 		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 			b.state = clicked
 			b.Fuction()
-			//TODO maybe change button color when pressed. maybe even hover color
 		} else {
 			if b.state == clicked {
 				if b.clickTime > b.MaxClickTime {
