@@ -47,6 +47,8 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 	molecule.Charge = 0
 	t := float64(molecule.DriftTicks) * DT
 
+	L := d.Rect.Min.X - d.AcellerationField.Rect.Max.X
+
 	E := float64(z) * d.AcellerationField.PotentialDifference // Electrical energy
 	v := L / t                                                // Constant velocity
 	m := 2 * E / (v * v)                                      // Kinetic energy
