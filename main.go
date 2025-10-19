@@ -140,7 +140,7 @@ type Simulation struct {
 	accelerationRegion ElectricField
 	detector           Detector
 
-	ionisationButton Button
+	buttons []*Button
 
 	molecules         []*Molecule
 	drawableMolecules []RenderMolecule
@@ -162,7 +162,14 @@ func NewSimulation() *Simulation {
 			),
 		},
 
-		ionisationButton: Button{
+		molecules:         []*Molecule{},
+		drawableMolecules: []RenderMolecule{},
+	}
+
+	s.selector = NewSelector(NewRect(0, 0, 1600, 80), s)
+
+	s.buttons = []*Button{
+		{
 			Text: "Ionise",
 			TextColor: ButtonColor{
 				Primary: color.White,
@@ -174,16 +181,25 @@ func NewSimulation() *Simulation {
 				Hover:     color.RGBA{0, 63, 22, 255},
 				Secondary: color.RGBA{0, 94, 35, 255},
 			},
+			Fuction:      s.IoniseMolecules,
 			MaxClickTime: 10,
 		},
-
-		molecules:         []*Molecule{},
-		drawableMolecules: []RenderMolecule{},
+		{
+			Text: "Clean",
+			TextColor: ButtonColor{
+				Primary: color.White,
+			},
+			TextSize: 30,
+			Rect:     NewRect(1350, 800, 1500, 850),
+			ButtonColor: ButtonColor{
+				Primary:   color.RGBA{0, 70, 25, 255},
+				Hover:     color.RGBA{0, 63, 22, 255},
+				Secondary: color.RGBA{0, 94, 35, 255},
+			},
+			Fuction:      s.CleanSimulation,
+			MaxClickTime: 10,
+		},
 	}
-
-	s.selector = NewSelector(NewRect(0, 0, 1600, 80), s)
-
-	s.ionisationButton.Fuction = s.IoniseMolecules
 	s.detector.AcellerationField = s.accelerationRegion
 
 	return s
@@ -195,6 +211,11 @@ func (s *Simulation) IoniseMolecules() {
 			m.Charge = 1
 		}
 	}
+}
+
+func (s *Simulation) CleanSimulation() {
+	s.molecules = []*Molecule{}
+	s.drawableMolecules = []RenderMolecule{}
 }
 
 func (s Simulation) GetSpawn() Vec2 {
@@ -212,7 +233,9 @@ func (s Simulation) GetSpawn() Vec2 {
 func (s *Simulation) Update() error {
 	s.selector.Update()
 
-	s.ionisationButton.Update()
+	for _, b := range s.buttons {
+		b.Update()
+	}
 
 	activeMolecules := []*Molecule{}
 
@@ -239,7 +262,10 @@ func (s Simulation) Draw(screen *ebiten.Image) {
 	}
 
 	s.selector.Draw(screen)
-	s.ionisationButton.Draw(screen)
+
+	for _, b := range s.buttons {
+		b.Draw(screen)
+	}
 }
 
 func (s Simulation) Layout(actualWidth, actualHeight int) (screenWidth, screenHeight int) {
