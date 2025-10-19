@@ -95,9 +95,11 @@ func NewSimulation() *Simulation {
 		},
 
 		ionisationButton: Button{
-			Text:  "Ionise",
-			Rect:  NewRect(100, 800, 300, 850),
-			Color: color.RGBA{0, 70, 25, 255},
+			Text:        "Ionise",
+			TextColor:   color.White,
+			TextSize:    30,
+			Rect:        NewRect(100, 800, 300, 850),
+			ButtonColor: color.RGBA{0, 70, 25, 255},
 		},
 
 		methane: Molecule{

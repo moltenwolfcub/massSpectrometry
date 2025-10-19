@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	mplusFaceSource *text.GoTextFaceSource
+	fontSource *text.GoTextFaceSource
 )
 
 func init() {
@@ -19,14 +19,16 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mplusFaceSource = s
+	fontSource = s
 }
 
 type Button struct {
-	Text    string
-	Rect    Rect
-	Color   color.Color
-	Fuction func()
+	Text        string
+	TextColor   color.Color
+	TextSize    float64
+	Rect        Rect
+	ButtonColor color.Color
+	Fuction     func()
 }
 
 func (b *Button) Update() {
@@ -40,15 +42,20 @@ func (b *Button) Update() {
 
 func (b Button) Draw(screen *ebiten.Image) {
 	img := ebiten.NewImage(int(b.Rect.Width()), int(b.Rect.Height()))
-	img.Fill(b.Color)
+	img.Fill(b.ButtonColor)
+
+	w, h := text.Measure(b.Text, &text.GoTextFace{
+		Source: fontSource,
+		Size:   b.TextSize,
+	}, 0)
 
 	op := &text.DrawOptions{}
-	op.GeoM.Translate(0, 0) //TODO centre text
-	op.ColorScale.ScaleWithColor(color.White)
+	op.GeoM.Translate((b.Rect.Width()-w)/2, (b.Rect.Height()-h)/2)
+	op.ColorScale.ScaleWithColor(b.TextColor)
 
 	text.Draw(img, b.Text, &text.GoTextFace{
-		Source: mplusFaceSource,
-		Size:   24,
+		Source: fontSource,
+		Size:   b.TextSize,
 	}, op)
 
 	drawOps := ebiten.DrawImageOptions{}
