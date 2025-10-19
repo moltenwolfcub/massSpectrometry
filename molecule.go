@@ -13,11 +13,20 @@ var (
 		AtomicNumber: 6,
 		AtomicMass:   12,
 	}
-
 	HYDROGEN = Atom{
 		Name:         "hydrogen",
 		AtomicNumber: 1,
 		AtomicMass:   1,
+	}
+	COPPER = Atom{
+		Name:         "copper",
+		AtomicNumber: 29,
+		AtomicMass:   63,
+	}
+	OXYGEN = Atom{
+		Name:         "oxygen",
+		AtomicNumber: 8,
+		AtomicMass:   16,
 	}
 )
 

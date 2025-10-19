@@ -28,6 +28,26 @@ var SELECTION []struct {
 		},
 		c: color.RGBA{250, 50, 50, 255},
 	},
+	{
+		m: Molecule{
+			Name: "copper",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&COPPER, 1}},
+		},
+		c: color.RGBA{114, 73, 12, 255},
+	},
+	{
+		m: Molecule{
+			Name: "water",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&HYDROGEN, 2}, {&OXYGEN, 1}},
+		},
+		c: color.RGBA{45, 45, 220, 255},
+	},
 }
 
 type Selectable struct {
@@ -63,6 +83,7 @@ func NewSelector(Rect Rect, simulation *Simulation) Selector {
 				Color:    o.c,
 			},
 		})
+		count++
 	}
 
 	return s
@@ -105,10 +126,9 @@ func (s Selector) Draw(screen *ebiten.Image) {
 		img := ebiten.NewImage(int(option.DrawRegion.Width()), int(option.DrawRegion.Height()))
 		img.Fill(color.RGBA{200, 200, 200, 255})
 
-		MOLECULE_RADIUS := 10.0
+		MOLECULE_RADIUS := float32(10.0)
 
-		moleculePos := option.DrawRegion.Min.Add(option.DrawRegion.Size().Mul(0.5)).Add(Vec2{-MOLECULE_RADIUS / 2, -MOLECULE_RADIUS / 2})
-		vector.FillCircle(img, float32(moleculePos.X), float32(moleculePos.Y), float32(MOLECULE_RADIUS), option.renderable.Color, true)
+		vector.FillCircle(img, float32(option.DrawRegion.Width())/2, float32(option.DrawRegion.Height())/2, float32(MOLECULE_RADIUS), option.renderable.Color, true)
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Translate(option.DrawRegion.Min.Elem())
