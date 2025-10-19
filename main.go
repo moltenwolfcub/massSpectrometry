@@ -74,8 +74,11 @@ type Simulation struct {
 
 	ionisationButton Button
 
-	methane         Molecule
-	drawableMethane RenderMolecule
+	molecules         []*Molecule
+	drawableMolecules []RenderMolecule
+
+	// methane         Molecule
+	// drawableMethane RenderMolecule
 }
 
 func NewSimulation() *Simulation {
@@ -109,36 +112,41 @@ func NewSimulation() *Simulation {
 			MaxClickTime: 10,
 		},
 
-		methane: Molecule{
-			Name:   "methane",
-			Active: true,
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{
-				{&CARBON, 1},
-				{&HYDROGEN, 4},
+		molecules: []*Molecule{
+			&Molecule{
+				Name:   "methane",
+				Active: true,
+				Atoms: []struct {
+					element *Atom
+					count   int
+				}{
+					{&CARBON, 1},
+					{&HYDROGEN, 4},
+				},
+				Charge:     0,
+				Pos:        Vec2{float64(100 / PXPM), float64(450 / PXPM)},
+				Vel:        Vec2{0, 0},
+				DriftTicks: 0,
 			},
-			Charge:     0,
-			Pos:        Vec2{float64(100 / PXPM), float64(450 / PXPM)},
-			Vel:        Vec2{0, 0},
-			DriftTicks: 0,
 		},
 	}
 
 	s.ionisationButton.Fuction = s.IoniseMolecules
 
-	s.drawableMethane = RenderMolecule{
-		&s.methane,
-		color.RGBA{200, 210, 210, 255},
+	s.drawableMolecules = []RenderMolecule{}
+	for _, m := range s.molecules {
+		s.drawableMolecules = append(s.drawableMolecules,
+			RenderMolecule{m, color.RGBA{200, 210, 210, 255}},
+		)
 	}
+
 	s.detector.AcellerationField = s.accelerationRegion
 
 	return s
 }
 
 func (s *Simulation) IoniseMolecules() {
-	for _, m := range []*Molecule{&s.methane} {
+	for _, m := range s.molecules {
 		if s.accelerationRegion.Rect.Contains(m.Pos) {
 			m.Charge = 1
 		}
@@ -148,14 +156,16 @@ func (s *Simulation) IoniseMolecules() {
 func (s *Simulation) Update() error {
 	s.ionisationButton.Update()
 
-	molecules := []*Molecule{}
+	activeMolecules := []*Molecule{}
 
-	if s.methane.Active {
-		s.methane.Update(s.accelerationRegion)
-		molecules = append(molecules, &s.methane)
+	for _, m := range s.molecules {
+		if m.Active {
+			m.Update(s.accelerationRegion)
+			activeMolecules = append(activeMolecules, m)
+		}
 	}
 
-	s.detector.Update(molecules)
+	s.detector.Update(activeMolecules)
 
 	return nil
 }
@@ -168,7 +178,9 @@ func (s Simulation) Draw(screen *ebiten.Image) {
 	s.accelerationRegion.Draw(screen)
 	s.detector.Draw(screen)
 
-	s.drawableMethane.Draw(screen)
+	for _, m := range s.drawableMolecules {
+		m.Draw(screen)
+	}
 }
 
 func (s Simulation) Layout(actualWidth, actualHeight int) (screenWidth, screenHeight int) {
