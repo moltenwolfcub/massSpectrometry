@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"image/color"
 	"math/rand/v2"
+	"slices"
+	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -97,6 +99,7 @@ func (e ElectricField) Draw(screen *ebiten.Image) {
 type Detector struct {
 	Rect              Rect
 	AcellerationField ElectricField
+	DataLogger        DataLogger
 }
 
 func (d *Detector) Update(molecules []*Molecule) {
@@ -121,7 +124,8 @@ func (d *Detector) TakeReading(molecule *Molecule) {
 
 	mpz := m / float64(z)
 
-	fmt.Println(molecule.Mass(), mpz)
+	// fmt.Println(molecule.Mass(), mpz)
+	d.DataLogger.LogData(mpz)
 }
 
 func (d Detector) Draw(screen *ebiten.Image) {
@@ -132,6 +136,53 @@ func (d Detector) Draw(screen *ebiten.Image) {
 	drawOps.GeoM.Translate(float64(d.Rect.Min.X*float64(PXPM)), float64(d.Rect.Min.Y*float64(PXPM)))
 
 	screen.DrawImage(img, &drawOps)
+}
+
+type LoggerEntry struct {
+	mz        float64
+	abundance int
+}
+
+type DataLogger struct {
+	data         []LoggerEntry
+	totalEntries int
+}
+
+func (d DataLogger) String() string {
+	ordered := make([]LoggerEntry, len(d.data))
+	copy(ordered, d.data)
+	sort.Slice(ordered, func(i, j int) bool {
+		return d.data[i].abundance < d.data[j].abundance
+	})
+
+	str := "================================\n"
+	str += "Abundance: mass (amount)\n"
+	for _, e := range ordered {
+		str += fmt.Sprintf("|%-6d |%-6.6f|\n", e.abundance, e.mz)
+	}
+	str += "\nAbundance: mass (%)\n"
+	for _, e := range ordered {
+		percentage := float64(e.abundance) / float64(d.totalEntries) * 100
+		str += fmt.Sprintf("|%-6.3f%% |%-6.6f|\n", percentage, e.mz)
+	}
+	return str
+}
+
+func (d *DataLogger) LogData(mz float64) {
+	d.totalEntries++
+	index := slices.IndexFunc(d.data, func(e LoggerEntry) bool {
+		return e.mz == mz
+	})
+
+	if index >= 0 {
+		d.data[index].abundance++
+		return
+	}
+
+	d.data = append(d.data, LoggerEntry{
+		mz:        mz,
+		abundance: 1,
+	})
 }
 
 type Simulation struct {
@@ -160,6 +211,10 @@ func NewSimulation() *Simulation {
 				float64(1400/PXPM), float64(150/PXPM),
 				float64(1500/PXPM), float64(750/PXPM),
 			),
+			DataLogger: DataLogger{
+				data:         make([]LoggerEntry, 0),
+				totalEntries: 0,
+			},
 		},
 
 		molecules:         []*Molecule{},
@@ -199,6 +254,21 @@ func NewSimulation() *Simulation {
 			Fuction:      s.CleanSimulation,
 			MaxClickTime: 10,
 		},
+		{
+			Text: "Get Output",
+			TextColor: ButtonColor{
+				Primary: color.White,
+			},
+			TextSize: 30,
+			Rect:     NewRect(325, 800, 575, 850),
+			ButtonColor: ButtonColor{
+				Primary:   color.RGBA{0, 70, 25, 255},
+				Hover:     color.RGBA{0, 63, 22, 255},
+				Secondary: color.RGBA{0, 94, 35, 255},
+			},
+			Fuction:      s.GetOutput,
+			MaxClickTime: 10,
+		},
 	}
 	s.detector.AcellerationField = s.accelerationRegion
 
@@ -216,6 +286,10 @@ func (s *Simulation) IoniseMolecules() {
 func (s *Simulation) CleanSimulation() {
 	s.molecules = []*Molecule{}
 	s.drawableMolecules = []RenderMolecule{}
+}
+
+func (s *Simulation) GetOutput() {
+	fmt.Print(s.detector.DataLogger)
 }
 
 func (s Simulation) GetSpawn() Vec2 {
