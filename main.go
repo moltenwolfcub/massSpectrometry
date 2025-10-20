@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"math/rand/v2"
 	"slices"
-	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -149,19 +148,19 @@ type DataLogger struct {
 }
 
 func (d DataLogger) String() string {
-	ordered := make([]LoggerEntry, len(d.data))
-	copy(ordered, d.data)
-	sort.Slice(ordered, func(i, j int) bool {
-		return d.data[i].abundance > d.data[j].abundance
-	})
+	// ordered := make([]LoggerEntry, len(d.data))
+	// copy(ordered, d.data)
+	// sort.Slice(ordered, func(i, j int) bool {
+	// 	return d.data[i].abundance > d.data[j].abundance
+	// })
 
 	str := "================================\n"
 	str += "Abundance: mass (amount)\n"
-	for _, e := range ordered {
+	for _, e := range d.data {
 		str += fmt.Sprintf("|%-6d |%-6.6f|\n", e.abundance, e.mz)
 	}
 	str += "\nAbundance: mass (%)\n"
-	for _, e := range ordered {
+	for _, e := range d.data {
 		percentage := float64(e.abundance) / float64(d.totalEntries) * 100
 		str += fmt.Sprintf("|%-6.3f%% |%-6.6f|\n", percentage, e.mz)
 	}
