@@ -70,7 +70,7 @@ func (g Graph) Draw(screen *ebiten.Image) {
 	FONT_SIZE := 36.0
 	LABEL_COLOR := color.Black
 	AXIS_THICKNESS := float32(20)
-	AXIS_COLOR := color.Black
+	AXIS_COLOR := color.RGBA{50, 50, 50, 255}
 
 	wx, hx := text.Measure(LABEL_X, &text.GoTextFace{
 		Source: fontSource,
@@ -138,7 +138,7 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
 	END_FILLER := 10.0
 	TOP_PAD := 20.0
 	LINE_WIDTH := 10.0
-	LINE_COLOR := color.Black
+	LINE_COLOR := color.RGBA{50, 50, 50, 255}
 
 	largestMZ := slices.MaxFunc(g.Data.data, func(a, b LoggerEntry) int {
 		return cmp.Compare(a.mz, b.mz)
