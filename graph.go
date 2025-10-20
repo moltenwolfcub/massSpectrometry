@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type Graph struct {
@@ -64,6 +65,8 @@ func (g *Graph) Draw(screen *ebiten.Image) {
 	LABEL_Y := "Relative Abundance"
 	FONT_SIZE := 36.0
 	LABEL_COLOR := color.Black
+	AXIS_THICKNESS := float32(20)
+	AXIS_COLOR := color.Black
 
 	wx, hx := text.Measure(LABEL_X, &text.GoTextFace{
 		Source: fontSource,
@@ -103,7 +106,10 @@ func (g *Graph) Draw(screen *ebiten.Image) {
 
 	//graph:axis
 	axisImg := ebiten.NewImage(int(axisRect.Width()), int(axisRect.Height()))
-	axisImg.Fill(color.RGBA{50, 50, 50, 255})
+	axisImg.Fill(color.RGBA{150, 220, 230, 255})
+
+	vector.StrokeLine(axisImg, 0, float32(axisRect.Height())-AXIS_THICKNESS/2, float32(axisRect.Width()), float32(axisRect.Height())-AXIS_THICKNESS/2, AXIS_THICKNESS, AXIS_COLOR, true)
+	vector.StrokeLine(axisImg, AXIS_THICKNESS/2, 0, AXIS_THICKNESS/2, float32(axisRect.Height()), AXIS_THICKNESS, AXIS_COLOR, true)
 
 	axisOps := ebiten.DrawImageOptions{}
 	axisOps.GeoM.Translate(axisRect.Min.Elem())
