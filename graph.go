@@ -1,8 +1,10 @@
 package main
 
 import (
+	"cmp"
 	"image/color"
 	"math"
+	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -54,7 +56,7 @@ func (g *Graph) Update() {
 	}
 }
 
-func (g *Graph) Draw(screen *ebiten.Image) {
+func (g Graph) Draw(screen *ebiten.Image) {
 	//graph
 	img := ebiten.NewImage(int(g.Rect.Width()), int(g.Rect.Height()))
 	img.Fill(color.RGBA{170, 170, 170, 255})
@@ -109,6 +111,8 @@ func (g *Graph) Draw(screen *ebiten.Image) {
 	vector.StrokeLine(axisImg, 0, float32(axisRect.Height())-AXIS_THICKNESS/2, float32(axisRect.Width()), float32(axisRect.Height())-AXIS_THICKNESS/2, AXIS_THICKNESS, AXIS_COLOR, true)
 	vector.StrokeLine(axisImg, AXIS_THICKNESS/2, 0, AXIS_THICKNESS/2, float32(axisRect.Height()), AXIS_THICKNESS, AXIS_COLOR, true)
 
+	g.drawData(axisImg, axisRect, float64(AXIS_THICKNESS))
+
 	axisOps := ebiten.DrawImageOptions{}
 	axisOps.GeoM.Translate(axisRect.Min.Elem())
 	img.DrawImage(axisImg, &axisOps)
@@ -120,5 +124,40 @@ func (g *Graph) Draw(screen *ebiten.Image) {
 	// buttons
 	for _, b := range g.Buttons {
 		b.Draw(screen)
+	}
+}
+
+func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
+	if len(g.Data.data) == 0 {
+		return
+	}
+
+	END_FILLER := 10.0
+	TOP_PAD := 20.0
+	LINE_WIDTH := 10.0
+	LINE_COLOR := color.Black
+
+	largestMZ := slices.MaxFunc(g.Data.data, func(a, b LoggerEntry) int {
+		return cmp.Compare(a.mz, b.mz)
+	})
+
+	largestAbundance := slices.MaxFunc(g.Data.data, func(a, b LoggerEntry) int {
+		return cmp.Compare(a.abundance, b.abundance)
+	})
+
+	maxX := largestMZ.mz + END_FILLER
+
+	for _, e := range g.Data.data {
+		percentAlong := e.mz / maxX
+		horizontalPos := percentAlong * (rect.Width() - axisThickness)
+
+		percentHeight := float64(e.abundance) / float64(largestAbundance.abundance)
+		height := percentHeight * (rect.Height() - axisThickness - TOP_PAD)
+
+		vector.StrokeLine(img,
+			float32(horizontalPos), float32(rect.Height()-axisThickness),
+			float32(horizontalPos), float32(rect.Height()-axisThickness-height),
+			float32(LINE_WIDTH), LINE_COLOR, true,
+		)
 	}
 }
