@@ -208,10 +208,15 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, too
 				Size:   float64(TOOLTIP_FONT_SIZE),
 			}, textOp)
 
-			// tooltipImg.DrawImage(textImg, &op)
 			drawTooltip = func(i *ebiten.Image, iTopLeft Vec2) {
 				op := ebiten.DrawImageOptions{}
-				op.GeoM.Translate(cursor.Sub(iTopLeft).Add(TOOLTIP_OFFSET).Elem())
+
+				if float64(i.Bounds().Max.X) > cursor.Add(TOOLTIP_OFFSET.Sub(iTopLeft)).X+w {
+					op.GeoM.Translate(cursor.Add(TOOLTIP_OFFSET).Sub(iTopLeft).Elem())
+				} else {
+					op.GeoM.Translate(cursor.Sub(TOOLTIP_OFFSET).Sub(Vec2{w, 0}).Sub(iTopLeft).Elem())
+				}
+
 				i.DrawImage(textImg, &op)
 			}
 		}
