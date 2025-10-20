@@ -33,6 +33,11 @@ var (
 		AtomicNumber: 8,
 		AtomicMass:   16,
 	}
+	NITROGEN = Atom{
+		Name:         "nitrogen",
+		AtomicNumber: 7,
+		AtomicMass:   14,
+	}
 )
 
 type Atom struct {

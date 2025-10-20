@@ -30,6 +30,26 @@ var SELECTION []struct {
 	},
 	{
 		m: Molecule{
+			Name: "ethanol",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&CARBON, 2}, {&HYDROGEN, 5}, {&OXYGEN, 1}},
+		},
+		c: color.RGBA{50, 150, 50, 255},
+	},
+	{
+		m: Molecule{
+			Name: "propane",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&CARBON, 3}, {&HYDROGEN, 8}},
+		},
+		c: color.RGBA{200, 75, 50, 255},
+	},
+	{
+		m: Molecule{
 			Name: "copper 63",
 			Atoms: []struct {
 				element *Atom
@@ -57,6 +77,16 @@ var SELECTION []struct {
 			}{{&HYDROGEN, 2}, {&OXYGEN, 1}},
 		},
 		c: color.RGBA{45, 45, 220, 255},
+	},
+	{
+		m: Molecule{
+			Name: "tnt",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&CARBON, 7}, {&HYDROGEN, 8}, {&NITROGEN, 3}, {&OXYGEN, 6}},
+		},
+		c: color.RGBA{50, 50, 50, 255},
 	},
 }
 
