@@ -117,11 +117,15 @@ func (g Graph) Draw(screen *ebiten.Image) {
 	vector.StrokeLine(axisImg, 0, float32(axisRect.Height())-AXIS_THICKNESS/2, float32(axisRect.Width()), float32(axisRect.Height())-AXIS_THICKNESS/2, AXIS_THICKNESS, AXIS_COLOR, true)
 	vector.StrokeLine(axisImg, AXIS_THICKNESS/2, 0, AXIS_THICKNESS/2, float32(axisRect.Height()), AXIS_THICKNESS, AXIS_COLOR, true)
 
-	g.drawData(axisImg, axisRect, float64(AXIS_THICKNESS), axisRect.Min.Add(g.Rect.Min))
+	drawTooltip := g.drawData(axisImg, axisRect, float64(AXIS_THICKNESS), img, axisRect.Min.Add(g.Rect.Min))
 
 	axisOps := ebiten.DrawImageOptions{}
 	axisOps.GeoM.Translate(axisRect.Min.Elem())
 	img.DrawImage(axisImg, &axisOps)
+
+	if drawTooltip != nil {
+		drawTooltip(img, g.Rect.Min)
+	}
 
 	ops := ebiten.DrawImageOptions{}
 	ops.GeoM.Translate(g.Rect.Min.Elem())
@@ -133,7 +137,7 @@ func (g Graph) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, topLeft Vec2) {
+func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, tooltipImg *ebiten.Image, topLeft Vec2) (drawTooltip func(*ebiten.Image, Vec2)) {
 	if len(g.Data.data) == 0 {
 		return
 	}
@@ -204,10 +208,13 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, top
 				Size:   float64(TOOLTIP_FONT_SIZE),
 			}, textOp)
 
-			op := ebiten.DrawImageOptions{}
-			op.GeoM.Translate(cursor.Sub(topLeft).Add(TOOLTIP_OFFSET).Elem())
-
-			img.DrawImage(textImg, &op)
+			// tooltipImg.DrawImage(textImg, &op)
+			drawTooltip = func(i *ebiten.Image, iTopLeft Vec2) {
+				op := ebiten.DrawImageOptions{}
+				op.GeoM.Translate(cursor.Sub(iTopLeft).Add(TOOLTIP_OFFSET).Elem())
+				i.DrawImage(textImg, &op)
+			}
 		}
 	}
+	return
 }
