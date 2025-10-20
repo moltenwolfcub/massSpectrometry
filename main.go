@@ -185,16 +185,26 @@ func (d *DataLogger) LogData(mz float64) {
 	})
 }
 
+type Screen int
+
+const (
+	MainScreen Screen = iota
+	ResultsScreen
+)
+
 type Simulation struct {
 	selector Selector
 
 	accelerationRegion ElectricField
 	detector           Detector
+	graph              Graph
 
 	buttons []*Button
 
 	molecules         []*Molecule
 	drawableMolecules []RenderMolecule
+
+	currentScreen Screen
 }
 
 func NewSimulation() *Simulation {
@@ -219,7 +229,11 @@ func NewSimulation() *Simulation {
 
 		molecules:         []*Molecule{},
 		drawableMolecules: []RenderMolecule{},
+
+		currentScreen: ResultsScreen,
 	}
+
+	s.graph = NewGraph(s)
 
 	s.selector = NewSelector(NewRect(0, 0, 1600, 80), s)
 
@@ -304,7 +318,8 @@ func (s *Simulation) CleanSimulation() {
 }
 
 func (s *Simulation) GetOutput() {
-	fmt.Print(s.detector.DataLogger)
+	s.currentScreen = ResultsScreen
+	// fmt.Print(s.detector.DataLogger)
 }
 
 func (s *Simulation) ResetOutput() {
@@ -325,22 +340,24 @@ func (s Simulation) GetSpawn() Vec2 {
 }
 
 func (s *Simulation) Update() error {
-	s.selector.Update()
+	if s.currentScreen == MainScreen {
+		s.selector.Update()
 
-	for _, b := range s.buttons {
-		b.Update()
-	}
-
-	activeMolecules := []*Molecule{}
-
-	for _, m := range s.molecules {
-		if m.Active {
-			m.Update(s.accelerationRegion)
-			activeMolecules = append(activeMolecules, m)
+		for _, b := range s.buttons {
+			b.Update()
 		}
-	}
 
-	s.detector.Update(activeMolecules)
+		activeMolecules := []*Molecule{}
+		for _, m := range s.molecules {
+			if m.Active {
+				m.Update(s.accelerationRegion)
+				activeMolecules = append(activeMolecules, m)
+			}
+		}
+		s.detector.Update(activeMolecules)
+	} else if s.currentScreen == ResultsScreen {
+		s.graph.Update()
+	}
 
 	return nil
 }
@@ -348,17 +365,21 @@ func (s *Simulation) Update() error {
 func (s Simulation) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 100, 120, 255})
 
-	s.accelerationRegion.Draw(screen)
-	s.detector.Draw(screen)
+	if s.currentScreen == MainScreen {
+		s.accelerationRegion.Draw(screen)
+		s.detector.Draw(screen)
 
-	for _, m := range s.drawableMolecules {
-		m.Draw(screen)
-	}
+		for _, m := range s.drawableMolecules {
+			m.Draw(screen)
+		}
 
-	s.selector.Draw(screen)
+		s.selector.Draw(screen)
 
-	for _, b := range s.buttons {
-		b.Draw(screen)
+		for _, b := range s.buttons {
+			b.Draw(screen)
+		}
+	} else if s.currentScreen == ResultsScreen {
+		s.graph.Draw(screen)
 	}
 }
 
