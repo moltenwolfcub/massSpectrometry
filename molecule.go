@@ -2,43 +2,32 @@ package main
 
 import (
 	"image/color"
+	"math/rand/v2"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var (
-	CARBON = Atom{
-		Name:         "carbon",
-		AtomicNumber: 6,
-		AtomicMass:   12,
+type Element struct {
+	Name     string
+	Isotopes []struct {
+		atom      *Atom
+		abundance float64
 	}
-	HYDROGEN = Atom{
-		Name:         "hydrogen",
-		AtomicNumber: 1,
-		AtomicMass:   1,
+}
+
+func (e Element) GetIsotope() *Atom {
+	r := rand.Float64()
+
+	for _, i := range e.Isotopes {
+		r -= i.abundance
+		if r <= 0 {
+			return i.atom
+		}
 	}
-	COPPER63 = Atom{
-		Name:         "copper 63",
-		AtomicNumber: 29,
-		AtomicMass:   63,
-	}
-	COPPER65 = Atom{
-		Name:         "copper 65",
-		AtomicNumber: 29,
-		AtomicMass:   65,
-	}
-	OXYGEN = Atom{
-		Name:         "oxygen",
-		AtomicNumber: 8,
-		AtomicMass:   16,
-	}
-	NITROGEN = Atom{
-		Name:         "nitrogen",
-		AtomicNumber: 7,
-		AtomicMass:   14,
-	}
-)
+
+	return e.Isotopes[len(e.Isotopes)-1].atom
+}
 
 type Atom struct {
 	Name         string
@@ -50,20 +39,31 @@ type Molecule struct {
 	Name       string
 	Active     bool
 	DriftTicks int
-	Atoms      []struct {
-		element *Atom
+	Elements   []struct {
+		element *Element
 		count   int
 	}
+	Atoms  []*Atom
 	Charge int
 	Pos    Vec2
 	Vel    Vec2
 }
 
+func (m *Molecule) SetIsotope() {
+	m.Atoms = make([]*Atom, 0)
+	for _, e := range m.Elements {
+		for i := 0; i < e.count; i++ {
+			isotope := e.element.GetIsotope()
+			m.Atoms = append(m.Atoms, isotope)
+		}
+	}
+}
+
 func (m Molecule) Mass() float64 {
 	mass := 0.0
 	for _, a := range m.Atoms {
-		elementMass := a.element.AtomicMass
-		mass += float64(elementMass * a.count)
+		elementMass := a.AtomicMass
+		mass += float64(elementMass)
 	}
 	return mass
 }

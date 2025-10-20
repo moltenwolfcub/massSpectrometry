@@ -11,95 +11,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-var SELECTION []struct {
-	m Molecule
-	c color.Color
-} = []struct {
-	m Molecule
-	c color.Color
-}{
-	{
-		m: Molecule{
-			Name: "methane",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&CARBON, 1}, {&HYDROGEN, 4}},
-		},
-		c: color.RGBA{250, 50, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "ethanol",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&CARBON, 2}, {&HYDROGEN, 5}, {&OXYGEN, 1}},
-		},
-		c: color.RGBA{50, 150, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "propane",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&CARBON, 3}, {&HYDROGEN, 8}},
-		},
-		c: color.RGBA{200, 75, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "copper 63",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&COPPER63, 1}},
-		},
-		c: color.RGBA{114, 73, 12, 255},
-	},
-	{
-		m: Molecule{
-			Name: "copper 65",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&COPPER65, 1}},
-		},
-		c: color.RGBA{114, 73, 12, 255},
-	},
-	{
-		m: Molecule{
-			Name: "water",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&HYDROGEN, 2}, {&OXYGEN, 1}},
-		},
-		c: color.RGBA{45, 45, 220, 255},
-	},
-	{
-		m: Molecule{
-			Name: "tnt",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&CARBON, 7}, {&HYDROGEN, 8}, {&NITROGEN, 3}, {&OXYGEN, 6}},
-		},
-		c: color.RGBA{50, 50, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "Hydrogen",
-			Atoms: []struct {
-				element *Atom
-				count   int
-			}{{&HYDROGEN, 2}},
-		},
-		c: color.RGBA{170, 170, 50, 255},
-	},
-}
-
 type Selectable struct {
 	DrawRegion Rect
 	molecule   *Molecule
@@ -124,7 +35,7 @@ func NewSelector(Rect Rect, simulation *Simulation) Selector {
 	PADDING := 5
 
 	count := 0
-	for _, o := range SELECTION {
+	for _, o := range MOLECULES {
 		s.Options = append(s.Options, Selectable{
 			DrawRegion: NewRect((tileSize+float64(PADDING))*float64(count)+float64(PADDING), float64(PADDING), (tileSize+float64(PADDING))*float64(count)+tileSize, tileSize-float64(PADDING)),
 			molecule:   &o.m,
@@ -145,12 +56,7 @@ func (s Selector) Update() {
 		cursor := Vec2{float64(rawCursorX), float64(rawCursorY)}
 		for _, o := range s.Options {
 			if o.DrawRegion.Contains(cursor) {
-				newMolecule := *o.molecule
-				newMolecule.Active = true
-				newMolecule.Charge = 0
-				newMolecule.Vel = Vec2{0, 0}
-				newMolecule.Pos = s.Simulation.GetSpawn()
-				newMolecule.DriftTicks = 0
+				newMolecule := s.SpawnMolecule(o.molecule)
 
 				s.Simulation.molecules = append(s.Simulation.molecules, &newMolecule)
 				s.Simulation.drawableMolecules = append(s.Simulation.drawableMolecules, RenderMolecule{
@@ -161,6 +67,19 @@ func (s Selector) Update() {
 			}
 		}
 	}
+}
+
+func (s Selector) SpawnMolecule(molecule *Molecule) Molecule {
+	newMolecule := *molecule
+	newMolecule.Active = true
+	newMolecule.Charge = 0
+	newMolecule.Vel = Vec2{0, 0}
+	newMolecule.Pos = s.Simulation.GetSpawn()
+	newMolecule.DriftTicks = 0
+
+	newMolecule.SetIsotope()
+
+	return newMolecule
 }
 
 func (s Selector) Draw(screen *ebiten.Image) {
