@@ -48,6 +48,9 @@ func NewGraph(sim *Simulation) Graph {
 
 func (g *Graph) Exit() {
 	g.Sim.currentScreen = MainScreen
+	for _, b := range g.Buttons {
+		b.state = normal
+	}
 }
 
 func (g *Graph) Update() {

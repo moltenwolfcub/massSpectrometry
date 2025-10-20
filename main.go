@@ -319,7 +319,9 @@ func (s *Simulation) CleanSimulation() {
 
 func (s *Simulation) GetOutput() {
 	s.currentScreen = ResultsScreen
-	// fmt.Print(s.detector.DataLogger)
+	for _, b := range s.buttons {
+		b.state = normal
+	}
 }
 
 func (s *Simulation) ResetOutput() {
