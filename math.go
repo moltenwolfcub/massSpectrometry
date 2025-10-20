@@ -73,3 +73,10 @@ func (r Rect) Canon() Rect {
 	}
 	return r
 }
+
+func (r Rect) Translate(v Vec2) Rect {
+	return Rect{
+		Min: r.Min.Add(v),
+		Max: r.Max.Add(v),
+	}
+}

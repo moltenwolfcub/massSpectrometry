@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"fmt"
 	"image/color"
 	"math"
 	"slices"
@@ -9,6 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Graph struct {
@@ -114,7 +117,7 @@ func (g Graph) Draw(screen *ebiten.Image) {
 	vector.StrokeLine(axisImg, 0, float32(axisRect.Height())-AXIS_THICKNESS/2, float32(axisRect.Width()), float32(axisRect.Height())-AXIS_THICKNESS/2, AXIS_THICKNESS, AXIS_COLOR, true)
 	vector.StrokeLine(axisImg, AXIS_THICKNESS/2, 0, AXIS_THICKNESS/2, float32(axisRect.Height()), AXIS_THICKNESS, AXIS_COLOR, true)
 
-	g.drawData(axisImg, axisRect, float64(AXIS_THICKNESS))
+	g.drawData(axisImg, axisRect, float64(AXIS_THICKNESS), axisRect.Min.Add(g.Rect.Min))
 
 	axisOps := ebiten.DrawImageOptions{}
 	axisOps.GeoM.Translate(axisRect.Min.Elem())
@@ -130,7 +133,7 @@ func (g Graph) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
+func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, topLeft Vec2) {
 	if len(g.Data.data) == 0 {
 		return
 	}
@@ -139,6 +142,12 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
 	TOP_PAD := 20.0
 	LINE_WIDTH := 10.0
 	LINE_COLOR := color.RGBA{50, 50, 50, 255}
+	TOOLTIP_FONT_SIZE := 32.0
+	TOOLTIP_OFFSET := Vec2{15, 3}
+	TOOLTIP_TEXT_COLOR := color.White
+	TOOLTIP_PADDING := 5
+	TOOLTIP_BG_COLOR := color.RGBA{70, 70, 70, 200}
+	TOOLTIP_LINE_SPACING := 5.0
 
 	largestMZ := slices.MaxFunc(g.Data.data, func(a, b LoggerEntry) int {
 		return cmp.Compare(a.mz, b.mz)
@@ -149,6 +158,9 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
 	})
 
 	maxX := largestMZ.mz + END_FILLER
+
+	rawCursorX, rawCursorY := ebiten.CursorPosition()
+	cursor := Vec2{float64(rawCursorX), float64(rawCursorY)}
 
 	for _, e := range g.Data.data {
 		percentAlong := e.mz / maxX
@@ -162,5 +174,40 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64) {
 			float32(horizontalPos), float32(rect.Height()-axisThickness-height),
 			float32(LINE_WIDTH), LINE_COLOR, true,
 		)
+
+		barRect := NewRect(
+			horizontalPos-axisThickness/2.0,
+			rect.Height()-axisThickness-height,
+			horizontalPos+axisThickness/2.0,
+			rect.Height()-axisThickness,
+		).Translate(topLeft)
+		if barRect.Contains(cursor) {
+			tooltip := fmt.Sprintf("m/z: %-6.6f\nAbundance:%-6.3f%%", e.mz, float64(e.abundance)/float64(g.Data.totalEntries)*100)
+
+			drawText := cases.Title(language.English).String(tooltip)
+
+			w, h := text.Measure(drawText, &text.GoTextFace{
+				Source: fontSource,
+				Size:   TOOLTIP_FONT_SIZE,
+			}, TOOLTIP_FONT_SIZE+TOOLTIP_LINE_SPACING)
+
+			textImg := ebiten.NewImage(int(w+float64(TOOLTIP_PADDING*2)), int(h+float64(TOOLTIP_PADDING*2)))
+			textImg.Fill(TOOLTIP_BG_COLOR)
+
+			textOp := &text.DrawOptions{}
+			textOp.GeoM.Translate(float64(TOOLTIP_PADDING), float64(TOOLTIP_PADDING))
+			textOp.ColorScale.ScaleWithColor(TOOLTIP_TEXT_COLOR)
+			textOp.LayoutOptions.LineSpacing = TOOLTIP_FONT_SIZE + TOOLTIP_LINE_SPACING
+
+			text.Draw(textImg, drawText, &text.GoTextFace{
+				Source: fontSource,
+				Size:   float64(TOOLTIP_FONT_SIZE),
+			}, textOp)
+
+			op := ebiten.DrawImageOptions{}
+			op.GeoM.Translate(cursor.Add(TOOLTIP_OFFSET).Elem())
+
+			img.DrawImage(textImg, &op)
+		}
 	}
 }
