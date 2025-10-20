@@ -217,8 +217,11 @@ func (s Selector) Draw(screen *ebiten.Image) {
 			}, textOp)
 
 			op := ebiten.DrawImageOptions{}
-			op.GeoM.Translate(cursor.Add(OFFSET).Elem())
-
+			if float64(screen.Bounds().Max.X) > cursor.Add(OFFSET).X+w {
+				op.GeoM.Translate(cursor.Add(OFFSET).Elem())
+			} else {
+				op.GeoM.Translate(cursor.Sub(OFFSET).Sub(Vec2{w, 0}).Elem())
+			}
 			screen.DrawImage(img, &op)
 
 			break
