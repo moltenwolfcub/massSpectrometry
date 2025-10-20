@@ -143,7 +143,7 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, top
 	LINE_WIDTH := 10.0
 	LINE_COLOR := color.RGBA{50, 50, 50, 255}
 	TOOLTIP_FONT_SIZE := 32.0
-	TOOLTIP_OFFSET := Vec2{15, 3}
+	TOOLTIP_OFFSET := Vec2{17, 3}
 	TOOLTIP_TEXT_COLOR := color.White
 	TOOLTIP_PADDING := 5
 	TOOLTIP_BG_COLOR := color.RGBA{70, 70, 70, 200}
@@ -205,7 +205,7 @@ func (g Graph) drawData(img *ebiten.Image, rect Rect, axisThickness float64, top
 			}, textOp)
 
 			op := ebiten.DrawImageOptions{}
-			op.GeoM.Translate(cursor.Add(TOOLTIP_OFFSET).Elem())
+			op.GeoM.Translate(cursor.Sub(topLeft).Add(TOOLTIP_OFFSET).Elem())
 
 			img.DrawImage(textImg, &op)
 		}

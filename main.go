@@ -230,7 +230,7 @@ func NewSimulation() *Simulation {
 		molecules:         []*Molecule{},
 		drawableMolecules: []RenderMolecule{},
 
-		currentScreen: ResultsScreen,
+		currentScreen: MainScreen,
 	}
 
 	s.graph = NewGraph(s)

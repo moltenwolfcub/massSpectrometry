@@ -88,6 +88,16 @@ var SELECTION []struct {
 		},
 		c: color.RGBA{50, 50, 50, 255},
 	},
+	{
+		m: Molecule{
+			Name: "Hydrogen",
+			Atoms: []struct {
+				element *Atom
+				count   int
+			}{{&HYDROGEN, 2}},
+		},
+		c: color.RGBA{170, 170, 50, 255},
+	},
 }
 
 type Selectable struct {
