@@ -57,8 +57,7 @@ func (g *Graph) Update() {
 func (g *Graph) Draw(screen *ebiten.Image) {
 	//graph
 	img := ebiten.NewImage(int(g.Rect.Width()), int(g.Rect.Height()))
-	img.Fill(color.White)
-
+	img.Fill(color.RGBA{170, 170, 170, 255})
 	PAD := 10.0
 	TEXT_PAD := 5.0
 	LABEL_X := "m/z"
@@ -106,7 +105,6 @@ func (g *Graph) Draw(screen *ebiten.Image) {
 
 	//graph:axis
 	axisImg := ebiten.NewImage(int(axisRect.Width()), int(axisRect.Height()))
-	axisImg.Fill(color.RGBA{150, 220, 230, 255})
 
 	vector.StrokeLine(axisImg, 0, float32(axisRect.Height())-AXIS_THICKNESS/2, float32(axisRect.Width()), float32(axisRect.Height())-AXIS_THICKNESS/2, AXIS_THICKNESS, AXIS_COLOR, true)
 	vector.StrokeLine(axisImg, AXIS_THICKNESS/2, 0, AXIS_THICKNESS/2, float32(axisRect.Height()), AXIS_THICKNESS, AXIS_COLOR, true)
