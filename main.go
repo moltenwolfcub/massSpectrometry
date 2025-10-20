@@ -340,21 +340,21 @@ func (s Simulation) GetSpawn() Vec2 {
 }
 
 func (s *Simulation) Update() error {
+	activeMolecules := []*Molecule{}
+	for _, m := range s.molecules {
+		if m.Active {
+			m.Update(s.accelerationRegion)
+			activeMolecules = append(activeMolecules, m)
+		}
+	}
+	s.detector.Update(activeMolecules)
+
 	if s.currentScreen == MainScreen {
 		s.selector.Update()
 
 		for _, b := range s.buttons {
 			b.Update()
 		}
-
-		activeMolecules := []*Molecule{}
-		for _, m := range s.molecules {
-			if m.Active {
-				m.Update(s.accelerationRegion)
-				activeMolecules = append(activeMolecules, m)
-			}
-		}
-		s.detector.Update(activeMolecules)
 	} else if s.currentScreen == ResultsScreen {
 		s.graph.Update()
 	}
