@@ -20,6 +20,17 @@ var (
 		AtomicMass:   2,
 	}
 
+	A_LITHIUM_6 = Atom{
+		Name:         "lithium-6",
+		AtomicNumber: 3,
+		AtomicMass:   6,
+	}
+	A_LITHIUM_7 = Atom{
+		Name:         "lithium-7",
+		AtomicNumber: 3,
+		AtomicMass:   7,
+	}
+
 	A_CARBON_12 = Atom{
 		Name:         "carbon-12",
 		AtomicNumber: 6,
@@ -32,12 +43,12 @@ var (
 	}
 
 	A_NITROGEN_14 = Atom{
-		Name:         "nitrogen",
+		Name:         "nitrogen-14",
 		AtomicNumber: 7,
 		AtomicMass:   14,
 	}
 	A_NITROGEN_15 = Atom{
-		Name:         "nitrogen",
+		Name:         "nitrogen-15",
 		AtomicNumber: 7,
 		AtomicMass:   15,
 	}
@@ -56,6 +67,60 @@ var (
 		Name:         "oxygen-18",
 		AtomicNumber: 8,
 		AtomicMass:   18,
+	}
+
+	A_NEON_20 = Atom{
+		Name:         "neon-20",
+		AtomicNumber: 10,
+		AtomicMass:   20,
+	}
+	A_NEON_21 = Atom{
+		Name:         "neon-21",
+		AtomicNumber: 10,
+		AtomicMass:   21,
+	}
+	A_NEON_22 = Atom{
+		Name:         "neon-22",
+		AtomicNumber: 10,
+		AtomicMass:   22,
+	}
+
+	A_SODIUM_23 = Atom{
+		Name:         "neon-22",
+		AtomicNumber: 11,
+		AtomicMass:   23,
+	}
+
+	A_SULFUR_32 = Atom{
+		Name:         "sulfur-32",
+		AtomicNumber: 16,
+		AtomicMass:   32,
+	}
+	A_SULFUR_33 = Atom{
+		Name:         "sulfur-33",
+		AtomicNumber: 16,
+		AtomicMass:   33,
+	}
+	A_SULFUR_34 = Atom{
+		Name:         "sulfur-34",
+		AtomicNumber: 16,
+		AtomicMass:   34,
+	}
+	A_SULFUR_36 = Atom{
+		Name:         "sulfur-36",
+		AtomicNumber: 16,
+		AtomicMass:   36,
+	}
+
+	A_CHLORINE_35 = Atom{
+		Name:         "chlorine-35",
+		AtomicNumber: 17,
+		AtomicMass:   35,
+	}
+	A_CHLORINE_37 = Atom{
+		Name:         "chlorine-35",
+		AtomicNumber: 17,
+		AtomicMass:   37,
 	}
 
 	A_COPPER_63 = Atom{
@@ -85,6 +150,22 @@ var (
 			{
 				atom:      &A_DEUTERIUM,
 				abundance: 0.0145,
+			},
+		},
+	}
+	LITHIUM = Element{
+		Name: "lithium",
+		Isotopes: []struct {
+			atom      *Atom
+			abundance float64
+		}{
+			{
+				atom:      &A_LITHIUM_6,
+				abundance: 0.078,
+			},
+			{
+				atom:      &A_LITHIUM_7,
+				abundance: 0.922,
 			},
 		},
 	}
@@ -137,6 +218,78 @@ var (
 			{
 				atom:      &A_OXYGEN_18,
 				abundance: 0.00222,
+			},
+		},
+	}
+	NEON = Element{
+		Name: "neon",
+		Isotopes: []struct {
+			atom      *Atom
+			abundance float64
+		}{
+			{
+				atom:      &A_NEON_20,
+				abundance: 0.9048,
+			},
+			{
+				atom:      &A_NEON_21,
+				abundance: 0.0027,
+			},
+			{
+				atom:      &A_NEON_22,
+				abundance: 0.0925,
+			},
+		},
+	}
+	SODIUM = Element{
+		Name: "sodium",
+		Isotopes: []struct {
+			atom      *Atom
+			abundance float64
+		}{
+			{
+				atom:      &A_SODIUM_23,
+				abundance: 1,
+			},
+		},
+	}
+	CHLORINE = Element{
+		Name: "chlorine",
+		Isotopes: []struct {
+			atom      *Atom
+			abundance float64
+		}{
+			{
+				atom:      &A_CHLORINE_35,
+				abundance: 0.758,
+			},
+			{
+				atom:      &A_CHLORINE_37,
+				abundance: 0.242,
+			},
+		},
+	}
+	SULFUR = Element{
+		Name: "sulfur",
+		Isotopes: []struct {
+			atom      *Atom
+			abundance float64
+		}{
+			{
+				atom:      &A_SULFUR_32,
+				abundance: 0.948562,
+			},
+			{
+				atom:      &A_SULFUR_33,
+				abundance: 0.00763,
+			},
+			{
+				atom:      &A_SULFUR_34,
+				abundance: 0.04365,
+			},
+			{
+				atom:      &A_SULFUR_36,
+				abundance: 0.000158,
 			},
 		},
 	}
@@ -227,12 +380,42 @@ var MOLECULES []struct {
 	},
 	{
 		m: Molecule{
-			Name: "Hydrogen",
+			Name: "hydrogen",
 			Elements: []struct {
 				element *Element
 				count   int
 			}{{&HYDROGEN, 2}},
 		},
 		c: color.RGBA{170, 170, 50, 255},
+	},
+	{
+		m: Molecule{
+			Name: "neon",
+			Elements: []struct {
+				element *Element
+				count   int
+			}{{&NEON, 1}},
+		},
+		c: color.RGBA{100, 8, 150, 255},
+	},
+	{
+		m: Molecule{
+			Name: "sodium",
+			Elements: []struct {
+				element *Element
+				count   int
+			}{{&SODIUM, 1}},
+		},
+		c: color.RGBA{100, 150, 0, 255},
+	},
+	{
+		m: Molecule{
+			Name: "chlorine",
+			Elements: []struct {
+				element *Element
+				count   int
+			}{{&CHLORINE, 2}},
+		},
+		c: color.RGBA{50, 75, 0, 255},
 	},
 }
