@@ -349,74 +349,24 @@ var MOLECULES []struct {
 	// 	c: color.RGBA{50, 150, 50, 255},
 	// },
 	{
-		m: Molecule{
-			Name: "propane",
-			// Atoms: []*Atom{
-			// 	&A_CARBON_12,
-			// 	&A_CARBON_12,
-			// 	&A_CARBON_12,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// 	&A_HYDROGEN,
-			// },
-			Mass: -1,
-			Structure: &BondedElement{
-				A_CARBON_12,
-				[]*BondedElement{
-					{
-						A_HYDROGEN,
-						nil,
+		m: NewMolecule("propane", &BondedElement{
+			atom: A_CARBON_12, children: []*BondedElement{
+				{atom: A_HYDROGEN},
+				{atom: A_HYDROGEN},
+				{atom: A_HYDROGEN},
+				{atom: A_CARBON_12, children: []*BondedElement{
+					{atom: A_HYDROGEN},
+					{atom: A_HYDROGEN},
+					{atom: A_CARBON_12, children: []*BondedElement{
+						{atom: A_HYDROGEN},
+						{atom: A_HYDROGEN},
+						{atom: A_HYDROGEN},
 					},
-					{
-						A_HYDROGEN,
-						nil,
-					},
-					{
-						A_HYDROGEN,
-						nil,
-					},
-					{
-						A_CARBON_12,
-						[]*BondedElement{
-							{
-								A_HYDROGEN,
-								nil,
-							},
-							{
-								A_HYDROGEN,
-								nil,
-							},
-							{
-								A_CARBON_12,
-								[]*BondedElement{
-									{
-										A_HYDROGEN,
-										nil,
-									},
-									{
-										A_HYDROGEN,
-										nil,
-									},
-									{
-										A_HYDROGEN,
-										nil,
-									},
-								},
-							},
-						},
 					},
 				},
+				},
 			},
-			// Elements: []struct {
-			// 	element *Element
-			// 	count   int
-			// }{{&CARBON, 3}, {&HYDROGEN, 8}},
-		},
+		}),
 		c: color.RGBA{200, 75, 50, 255},
 	},
 	// {

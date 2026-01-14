@@ -50,11 +50,15 @@ type Molecule struct {
 	Mass       float64
 
 	Structure *BondedElement
-	// Elements   []struct {
-	// 	element *Element
-	// 	count   int
-	// }
-	// Atoms []*Atom
+}
+
+func NewMolecule(name string, structure *BondedElement) Molecule {
+	m := Molecule{
+		Name:      name,
+		Structure: structure,
+		Mass:      -1,
+	}
+	return m
 }
 
 // func (m *Molecule) SetIsotope() {
