@@ -39,25 +39,26 @@ type Molecule struct {
 	Name       string
 	Active     bool
 	DriftTicks int
-	Elements   []struct {
-		element *Element
-		count   int
-	}
-	Atoms  []*Atom
-	Charge int
-	Pos    Vec2
-	Vel    Vec2
+	Charge     int
+	Pos        Vec2
+	Vel        Vec2
+
+	// Elements   []struct {
+	// 	element *Element
+	// 	count   int
+	// }
+	Atoms []*Atom
 }
 
-func (m *Molecule) SetIsotope() {
-	m.Atoms = make([]*Atom, 0)
-	for _, e := range m.Elements {
-		for i := 0; i < e.count; i++ {
-			isotope := e.element.GetIsotope()
-			m.Atoms = append(m.Atoms, isotope)
-		}
-	}
-}
+// func (m *Molecule) SetIsotope() {
+// 	m.Atoms = make([]*Atom, 0)
+// 	for _, e := range m.Elements {
+// 		for i := 0; i < e.count; i++ {
+// 			isotope := e.element.GetIsotope()
+// 			m.Atoms = append(m.Atoms, isotope)
+// 		}
+// 	}
+// }
 
 func (m Molecule) Mass() float64 {
 	mass := 0.0

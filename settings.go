@@ -318,104 +318,117 @@ var MOLECULES []struct {
 	m Molecule
 	c color.Color
 }{
-	{
-		m: Molecule{
-			Name: "methane",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&CARBON, 1}, {&HYDROGEN, 4}},
-		},
-		c: color.RGBA{250, 50, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "copper",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&COPPER, 1}},
-		},
-		c: color.RGBA{114, 73, 12, 255},
-	},
-	{
-		m: Molecule{
-			Name: "ethanol",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&CARBON, 2}, {&HYDROGEN, 6}, {&OXYGEN, 1}},
-		},
-		c: color.RGBA{50, 150, 50, 255},
-	},
+	// {
+	// 	m: Molecule{
+	// 		Name: "methane",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&CARBON, 1}, {&HYDROGEN, 4}},
+	// 	},
+	// 	c: color.RGBA{250, 50, 50, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "copper",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&COPPER, 1}},
+	// 	},
+	// 	c: color.RGBA{114, 73, 12, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "ethanol",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&CARBON, 2}, {&HYDROGEN, 6}, {&OXYGEN, 1}},
+	// 	},
+	// 	c: color.RGBA{50, 150, 50, 255},
+	// },
 	{
 		m: Molecule{
 			Name: "propane",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&CARBON, 3}, {&HYDROGEN, 8}},
+			Atoms: []*Atom{
+				&A_CARBON_12,
+				&A_CARBON_12,
+				&A_CARBON_12,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+				&A_HYDROGEN,
+			},
+			// Elements: []struct {
+			// 	element *Element
+			// 	count   int
+			// }{{&CARBON, 3}, {&HYDROGEN, 8}},
 		},
 		c: color.RGBA{200, 75, 50, 255},
 	},
-	{
-		m: Molecule{
-			Name: "water",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&HYDROGEN, 2}, {&OXYGEN, 1}},
-		},
-		c: color.RGBA{45, 45, 220, 255},
-	},
-	{
-		m: Molecule{
-			Name: "tnt",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&CARBON, 7}, {&HYDROGEN, 5}, {&NITROGEN, 3}, {&OXYGEN, 6}},
-		},
-		c: color.RGBA{50, 50, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "hydrogen",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&HYDROGEN, 2}},
-		},
-		c: color.RGBA{170, 170, 50, 255},
-	},
-	{
-		m: Molecule{
-			Name: "neon",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&NEON, 1}},
-		},
-		c: color.RGBA{100, 8, 150, 255},
-	},
-	{
-		m: Molecule{
-			Name: "sodium",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&SODIUM, 1}},
-		},
-		c: color.RGBA{100, 150, 0, 255},
-	},
-	{
-		m: Molecule{
-			Name: "chlorine",
-			Elements: []struct {
-				element *Element
-				count   int
-			}{{&CHLORINE, 2}},
-		},
-		c: color.RGBA{50, 75, 0, 255},
-	},
+	// {
+	// 	m: Molecule{
+	// 		Name: "water",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&HYDROGEN, 2}, {&OXYGEN, 1}},
+	// 	},
+	// 	c: color.RGBA{45, 45, 220, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "tnt",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&CARBON, 7}, {&HYDROGEN, 5}, {&NITROGEN, 3}, {&OXYGEN, 6}},
+	// 	},
+	// 	c: color.RGBA{50, 50, 50, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "hydrogen",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&HYDROGEN, 2}},
+	// 	},
+	// 	c: color.RGBA{170, 170, 50, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "neon",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&NEON, 1}},
+	// 	},
+	// 	c: color.RGBA{100, 8, 150, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "sodium",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&SODIUM, 1}},
+	// 	},
+	// 	c: color.RGBA{100, 150, 0, 255},
+	// },
+	// {
+	// 	m: Molecule{
+	// 		Name: "chlorine",
+	// 		Elements: []struct {
+	// 			element *Element
+	// 			count   int
+	// 		}{{&CHLORINE, 2}},
+	// 	},
+	// 	c: color.RGBA{50, 75, 0, 255},
+	// },
 }
