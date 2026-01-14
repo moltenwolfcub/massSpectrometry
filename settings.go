@@ -351,18 +351,66 @@ var MOLECULES []struct {
 	{
 		m: Molecule{
 			Name: "propane",
-			Atoms: []*Atom{
-				&A_CARBON_12,
-				&A_CARBON_12,
-				&A_CARBON_12,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
-				&A_HYDROGEN,
+			// Atoms: []*Atom{
+			// 	&A_CARBON_12,
+			// 	&A_CARBON_12,
+			// 	&A_CARBON_12,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// 	&A_HYDROGEN,
+			// },
+			Mass: -1,
+			Structure: &BondedElement{
+				A_CARBON_12,
+				[]*BondedElement{
+					{
+						A_HYDROGEN,
+						nil,
+					},
+					{
+						A_HYDROGEN,
+						nil,
+					},
+					{
+						A_HYDROGEN,
+						nil,
+					},
+					{
+						A_CARBON_12,
+						[]*BondedElement{
+							{
+								A_HYDROGEN,
+								nil,
+							},
+							{
+								A_HYDROGEN,
+								nil,
+							},
+							{
+								A_CARBON_12,
+								[]*BondedElement{
+									{
+										A_HYDROGEN,
+										nil,
+									},
+									{
+										A_HYDROGEN,
+										nil,
+									},
+									{
+										A_HYDROGEN,
+										nil,
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			// Elements: []struct {
 			// 	element *Element

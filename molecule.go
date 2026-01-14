@@ -35,6 +35,11 @@ type Atom struct {
 	AtomicMass   int
 }
 
+type BondedElement struct {
+	atom     Atom
+	children []*BondedElement
+}
+
 type Molecule struct {
 	Name       string
 	Active     bool
@@ -42,12 +47,14 @@ type Molecule struct {
 	Charge     int
 	Pos        Vec2
 	Vel        Vec2
+	Mass       float64
 
+	Structure *BondedElement
 	// Elements   []struct {
 	// 	element *Element
 	// 	count   int
 	// }
-	Atoms []*Atom
+	// Atoms []*Atom
 }
 
 // func (m *Molecule) SetIsotope() {
@@ -60,12 +67,23 @@ type Molecule struct {
 // 	}
 // }
 
-func (m Molecule) Mass() float64 {
-	mass := 0.0
-	for _, a := range m.Atoms {
-		elementMass := a.AtomicMass
-		mass += float64(elementMass)
+func (m Molecule) CalcMass() float64 {
+	if m.Mass >= 0 {
+		return m.Mass
 	}
+
+	mass := 0.0
+	mass += float64(m.Structure.atom.AtomicMass)
+
+	toSearch := append(make([]*BondedElement, 0), m.Structure.children...)
+
+	for i := 0; i < len(toSearch); i++ {
+		e := toSearch[i]
+		mass += float64(e.atom.AtomicMass)
+		toSearch = append(toSearch, e.children...)
+	}
+
+	m.Mass = mass
 	return mass
 }
 
@@ -78,7 +96,7 @@ func (m *Molecule) Update(electricField ElectricField) {
 		m.DriftTicks++
 	}
 
-	a := F.Mul(1 / m.Mass()) //Newton's 2nd law
+	a := F.Mul(1 / m.CalcMass()) //Newton's 2nd law
 
 	u := m.Vel
 	v := u.Add(a.Mul(DT))                        //SUVAT 2
