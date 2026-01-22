@@ -350,17 +350,17 @@ var MOLECULES []struct {
 	// },
 	{
 		m: NewMolecule("propane", &BondedElement{
-			atom: A_CARBON_12, children: []*BondedElement{
-				{atom: A_HYDROGEN},
-				{atom: A_HYDROGEN},
-				{atom: A_HYDROGEN},
-				{atom: A_CARBON_12, children: []*BondedElement{
-					{atom: A_HYDROGEN},
-					{atom: A_HYDROGEN},
-					{atom: A_CARBON_12, children: []*BondedElement{
-						{atom: A_HYDROGEN},
-						{atom: A_HYDROGEN},
-						{atom: A_HYDROGEN},
+			atom: &A_CARBON_12, children: []*BondedElement{
+				{atom: &A_HYDROGEN},
+				{atom: &A_HYDROGEN},
+				{atom: &A_HYDROGEN},
+				{atom: &A_CARBON_12, children: []*BondedElement{
+					{atom: &A_HYDROGEN},
+					{atom: &A_HYDROGEN},
+					{atom: &A_CARBON_12, children: []*BondedElement{
+						{atom: &A_HYDROGEN},
+						{atom: &A_HYDROGEN},
+						{atom: &A_HYDROGEN},
 					},
 					},
 				},

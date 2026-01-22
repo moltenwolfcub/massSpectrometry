@@ -36,7 +36,7 @@ type Atom struct {
 }
 
 type BondedElement struct {
-	atom     Atom
+	atom     *Atom
 	children []*BondedElement
 }
 
