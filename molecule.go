@@ -36,8 +36,13 @@ type Atom struct {
 }
 
 type BondedElement struct {
-	atom     *Atom
+	element  *Element
 	children []*BondedElement
+}
+
+type BondedAtom struct {
+	atom     *Atom
+	children []*BondedAtom
 }
 
 type Molecule struct {
@@ -49,27 +54,34 @@ type Molecule struct {
 	Vel        Vec2
 	Mass       float64
 
-	Structure *BondedElement
+	ElementalStructure *BondedElement
+	AtomicStructure    *BondedAtom
 }
 
 func NewMolecule(name string, structure *BondedElement) Molecule {
 	m := Molecule{
-		Name:      name,
-		Structure: structure,
-		Mass:      -1,
+		Name:               name,
+		ElementalStructure: structure,
+		Mass:               -1,
 	}
 	return m
 }
 
-// func (m *Molecule) SetIsotope() {
-// 	m.Atoms = make([]*Atom, 0)
-// 	for _, e := range m.Elements {
-// 		for i := 0; i < e.count; i++ {
-// 			isotope := e.element.GetIsotope()
-// 			m.Atoms = append(m.Atoms, isotope)
-// 		}
-// 	}
-// }
+func (m *Molecule) SetIsotope() {
+	root := m.setIsotopeChildren(m.ElementalStructure)
+	m.AtomicStructure = root
+}
+
+func (m Molecule) setIsotopeChildren(bondedElement *BondedElement) *BondedAtom {
+	atom := &BondedAtom{
+		atom: bondedElement.element.GetIsotope(),
+	}
+	for _, child := range bondedElement.children {
+		assignedChild := m.setIsotopeChildren(child)
+		atom.children = append(atom.children, assignedChild)
+	}
+	return atom
+}
 
 func (m Molecule) CalcMass() float64 {
 	if m.Mass >= 0 {
@@ -77,9 +89,9 @@ func (m Molecule) CalcMass() float64 {
 	}
 
 	mass := 0.0
-	mass += float64(m.Structure.atom.AtomicMass)
+	mass += float64(m.AtomicStructure.atom.AtomicMass)
 
-	toSearch := append(make([]*BondedElement, 0), m.Structure.children...)
+	toSearch := append(make([]*BondedAtom, 0), m.AtomicStructure.children...)
 
 	for i := 0; i < len(toSearch); i++ {
 		e := toSearch[i]

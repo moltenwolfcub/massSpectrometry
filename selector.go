@@ -77,7 +77,7 @@ func (s Selector) SpawnMolecule(molecule *Molecule) Molecule {
 	newMolecule.Pos = s.Simulation.GetSpawn()
 	newMolecule.DriftTicks = 0
 
-	// newMolecule.SetIsotope()
+	newMolecule.SetIsotope()
 
 	return newMolecule
 }
